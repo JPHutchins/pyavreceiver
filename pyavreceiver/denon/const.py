@@ -1,0 +1,15 @@
+"""Define constants for Denon/Marantz."""
+
+MESSAGE_INTERVAL_LIMIT = 50  # milliseconds
+MESSAGE_RESPONSE_TIMEOUT = 250  # milliseconds
+
+TELNET_SEPARATOR = "\r"
+
+TELNET_PORT = 23
+DEFAULT_TIMEOUT = 10.0
+DEFAULT_RECONNECT_DELAY = 10.0
+DEFAULT_HEART_BEAT = 10.0
+
+TELNET_QUERY = "?"
+
+ATTR_DYNAMIC_EQ = "audyssey_dynamic_eq"

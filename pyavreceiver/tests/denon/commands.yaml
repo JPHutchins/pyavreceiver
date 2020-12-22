@@ -1,0 +1,452 @@
+PW:
+  ^name: power
+  "ON": true
+  STANDBY: false
+MV: # Volume like 40 405 41 415 ^etc:
+  ^params: true
+  ^name: volume
+  ^range:
+    - 000
+    - 990
+  ^function: volume
+  ^zero: 80
+  MAX:
+    ^name: max_volume
+    ^function: volume
+    ^zero: 80
+    ^range:
+    - 000
+    - 980
+ECO:
+  AUTO
+SSLEV:
+  ^name: channel_level
+  ^params: True
+  ^zero: 50
+  ^range:
+      - 000
+      - 999
+  ^function: volume
+CV: # 50 = 0dB, 38 = -12dB, 62 = +12dB:
+  ^name: channel_level
+  ^params: True
+  ^range:
+      - 38
+      - 62
+  ^function: volume
+  ^zero: 50
+  FL:
+  FR:
+  C:
+  SW:
+  SL:
+  SR:
+  SBL:
+  SBR:
+  SB:
+  FHL:
+  FHR:
+  FWL:
+  FWR:
+MU:
+  ^name: mute
+  "ON": true
+  "OFF": false
+SI:
+  ^name: source
+  PHONO:
+  CD:
+  TUNER:
+  DVD:
+  BD: blu-ray
+  TV:
+  SAT/CBL:
+  DVR:
+  GAME:
+  GAME2:
+  V.AUX:
+  DOCK:
+  HDRADIO:
+  IPOD:
+  RHAPSODY:
+  NAPSTER:
+  PANDORA:
+  LASTFM:
+  FLICKR:
+  FAVORITES:
+  IRADIO:
+  SERVER:
+  USB DIRECT:
+  IPOD DIRECT:
+  USB:
+  IPD:
+ZM:
+  "ON": "On"
+  "OFF": "Off"
+SD:
+  AUTO:
+  HDMI:
+  DIGITAL:
+  ANALOG:
+  ARC:
+  "NO":
+DC:
+  ^name: digital_signal_mode
+  AUTO:
+  PCM:
+  DTS:
+SV:
+  DVD:
+  BD:
+  TV:
+  SAT/CBL:
+  DVR:
+  GAME:
+  V.AUX:
+  SOURCE:
+SLP:
+  "OFF":
+MS:
+  ^name: sound_mode
+  DIRECT:
+  PURE DIRECT:
+  STEREO:
+  MULTI CH IN:
+  M CH IN+PL2X C:
+  M CH IN+PL2X M:
+  M CH IN+PL2Z H:
+  MULTI CH IN 7.1:
+  DOLBY AUDIO-DSUR:
+  DOLBY AUDIO-DD+:
+  DOLBY PRO LOGIC:
+  DOLBY PL2 C:
+  DOLBY PL2 M:
+  DOLBY PL2 G:
+  DOLBY PL2X C:
+  DOLBY PL2X M:
+  DOLBY PL2X G:
+  DOLBY PL2Z H:
+  DOLBY DIGITAL:
+  DOLBY D EX:
+  DTS NEO:6 C:
+  DTS NEO:6 M:
+  DTS SURROUND:
+  DTS ES DSCRT6.1:
+  DTS ES MTRX6.1:
+  DTS+PL2X C:
+  DTS+PL2X M:
+  DTS+NEO:6:
+  DTS96/24:
+  DTS96 ES MTRX:
+  MCH STEREO:
+  ROCK ARENA:
+  JAZZ CLUB:
+  MONO MOVIE:
+  MATRIX:
+  VIDEO GAME:
+  VIRTUAL:
+  DOLBY D+:
+  DOLBY D+ +EX:
+  DOLBY D+ +PL2X C:
+  DOLBY D+ +PL2X M:
+  DOLBY D+ +PL2Z H:
+  DOLBY HD:
+  DOLBY HD+EX:
+  DOLBY HD+PL2X C:
+  DOLBY HD+PL2X M:
+  DOLBY HD+PL2Z H:
+  DTS HD:
+  DTS HD MSTR:
+  DTS HD+NEO:6:
+  DTS HD+PL2X C:
+  DTS HD+PL2X M:
+  DTS HD+PL2Z H:
+  DTS ES 8CH DSCRT:
+  DTS EXPRESS:
+  MPEG2 AAC:
+  AAC+DOLBY EX:
+  AAC+PL2X C:
+  AUDYSSEY DSX:
+  PL DSX:
+  PL2 C DSX:
+  PL2 M DSX:
+  PL2 G DSX:
+  NEO:6 C DSX:
+  NEO:6 M DSX:
+  QUICK1:
+  QUICK2:
+  QUICK3:
+  QUICK4:
+  QUICK5:
+VS:
+  MONI1:
+  MONI2:
+  ASPNRM:
+  ASPFUL:
+  SC48P:
+  SC10I:
+  SC72P:
+  SC10P:
+  SC10P24:
+  SCAUTO:
+  SCH48P:
+  SCH10I:
+  SCH72P:
+  SCH10P:
+  SCH10P24:
+  SCHAUTO:
+  AUDIO AMP:
+  AUDIO TV:
+  VPMAUTO:
+  VPMGAME:
+PS:
+  ^params: true
+  ^noquery: true
+  TONE CTRL:
+    ^name: tone_control
+    "OFF": false
+    "ON": true
+  SB:
+    ^name: surround_back
+    MTRX ON:
+    PL2X CINEMA:
+    PL2X MUSIC:
+    "ON": true
+    "OFF": false
+    ESMTRX:
+  CINEMA EQ.:
+    "ON": "On"
+    "OFF": "Off"
+  "MODE:":
+    ^name: dsp_category
+    CINEMA:
+    MUSIC:
+    GAME:
+    PRO LOGIC:
+    HEIGHT:
+  "FH:":
+    ^name: front_height
+    "ON": "On"
+    "OFF": "Off"
+  PHG:
+    LOW:
+    MID:
+    HI:
+  "SP:":
+    FH:
+    FW:
+    SB:
+    "OFF":
+  "MULTEQ:":
+    ^name: audyssey_multi_eq
+    AUDYSSEY:
+    BYP.LR:
+    FLAT:
+    MANUAL:
+    "OFF":
+  DYNEQ:
+    ^name: audyssey_dynamic_eq
+    "ON": "On"
+    "OFF": "Off"
+  REFLEV:
+    ^name: audyssey_reference_level_offset
+    0: 0
+    5: -5
+    10: -10
+    15: -15
+  DIL:
+    ^name: dialog_level
+    "ON": true
+    "OFF": false
+    UP: "up"
+    DOWN: "down"
+    ^range:
+      - 38
+      - 62
+    ^zero: 50
+    ^function: volume
+  DRC:
+    ^name: dynamic_range_control
+    AUTO: auto
+    LOW: low
+    MID: medium
+    HI: high
+    "OFF": "off"
+  DYNVOL:
+    ^name: dsp_dynamic_range_control
+    HEV: high
+    MED: medium
+    LIT: low
+    "OFF": "off"
+  DSX:
+    "ON": "On"
+    "OFF": "Off"
+  STW:
+    ^range:
+      - 40
+      - 60
+  STH:
+    ^range:
+      - 40
+      - 60
+  BAS:
+    ^name: "bass"
+    ^range:
+      - 44
+      - 56
+    ^function: volume
+    ^zero: 50
+  TRE:
+    ^name: "treble"
+    ^range:
+      - 44
+      - 56
+    ^function: volume
+    ^zero: 50
+  DCO:
+    ^name: metadata_dynamic_range_control
+    LOW: low
+    MID: medium
+    HIGH: high
+    "OFF": "off"
+  LFE:
+    ^name: lfe_level
+    ^range:
+      - -10
+      - 0
+    ^function: volume
+    ^zero: 0
+  EFF:
+    ^range:
+      - 1
+      - 15
+  AFD:
+    "ON": "On"
+    "OFF": "Off"
+  PAN:
+    "ON": "On"
+    "OFF": "Off"
+  DIM:
+    ^range:
+      - 0
+      - 6
+  CEN:
+    ^range:
+      - 0
+      - 7
+  CEI:
+    ^range:
+      - 0
+      - 1
+  SWR:
+    ^name: subwoofer_1
+    "ON": true
+    "OFF": false
+  RSZ:
+    S:
+    MS:
+    M:
+    ML:
+    L:
+  DELAY:
+    ^range:
+      - 000
+      - 999
+  RSTR:
+    MODE1:
+    MODE2:
+    MODE3:
+    "OFF":
+  FRONT:
+    SPA:
+    SPB:
+PV:
+  CN 50:
+  BR 12:
+  CM 50:
+  HUE 50:
+  DNR OFF:
+  DNR LOW:
+  DNR MID:
+  DNR HI:
+Z2:
+  ^name: zone_2
+  ^range:
+    - 00
+    - 99
+  ^function: volume
+  ^zero: 80
+  PHONO:
+  SOURCE:
+  QUICK1:
+  QUICK2:
+  QUICK3:
+  QUICK4:
+  QUICK5:
+  "ON":
+  "OFF":
+Z2MU:
+  "ON":
+  "OFF":
+Z2CS:
+  ST:
+  MONO:
+Z2CV:
+  ^params: true
+  FL:
+    ^range:
+      - 38
+      - 62
+  FR:
+    ^range:
+      - 38
+      - 62
+Z2HPF:
+  "ON": "On"
+  "OFF": "Off"
+Z2PS:
+  ^params: true
+  BAS:
+    ^range:
+      - 44
+      - 56
+  TRE:
+    ^range:
+      - 44
+      - 56
+Z3MU:
+  "ON": "On"
+  "OFF": "Off"
+Z3CS:
+  ST:
+  MONO:
+Z3CV:
+  FL:
+    ^range:
+      - 38
+      - 62
+  FR:
+    ^range:
+      - 38
+      - 62
+Z3HPF:
+  "ON": "On"
+  "OFF": "Off"
+Z3PS:
+  BAS:
+    ^range:
+      - 44
+      - 56
+  TRE:
+    ^range:
+      - 44
+      - 56
+FAKEFORTEST: None
+FAKE:
+  FOR TESTS:
+FAKEFO:
+  R T E STS:
+FAKEN:
+  ^params: true
+  OR:
+    TEST

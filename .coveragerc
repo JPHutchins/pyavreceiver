@@ -1,0 +1,5 @@
+[run]
+source = pyavreceiver
+omit=
+    venv/*
+    pyavreceiver/tests/*
