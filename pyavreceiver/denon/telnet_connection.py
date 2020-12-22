@@ -40,7 +40,9 @@ class DenonTelnetConnection(TelnetConnection):
 
     async def _response_handler(self):
         while True:
-            msg = await self._reader.readuntil(separator=b"\r")
+            msg = await self._reader.readuntil(
+                separator=denon_const.TELNET_SEPARATOR.encode()
+            )
             message = msg.decode()[:-1]
             self._last_activity = datetime.utcnow()
             resp = DenonMessage(message, command_dict=self._command_dict)
