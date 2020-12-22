@@ -22,8 +22,13 @@ COMMAND_FUNCTION = "^function"
 COMMAND_ZERO = "^zero"
 
 EVENT_TELNET = "telnet"
+EVENT_DISCONNECTED = "disconnected"
+EVENT_CONNECTED = "connected"
 
 SIGNAL_STATE_UPDATE = "state_update"
+SIGNAL_TELNET_EVENT = "telnet_event"
+SIGNAL_STATE_UPDATE = "state_update"
+
 
 ATTR_POWER = "power"
 ATTR_VOLUME = "volume"

@@ -62,9 +62,14 @@ class AVReceiver:
             disconnect = self._connections.pop()
             await disconnect()
 
-    def update_state(self, state_update: dict):
+    def update_state(self, state_update: dict) -> bool:
         """Handle a state update."""
-        self._state.update(state_update)
+        update = False
+        for attr, val in state_update.items():
+            if self._state[attr] != val:
+                self._state[attr] = val
+                update = True
+        return update
 
     @property
     def dispatcher(self) -> Dispatcher:

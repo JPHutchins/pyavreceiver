@@ -97,12 +97,11 @@ class TelnetConnection(ABC):
         self._response_handler_task = asyncio.create_task(self._response_handler())
         self._state = const.STATE_CONNECTED
         self._command_queue_task = asyncio.create_task(self._process_command_queue())
-        # await self.commands.register_for_change_events()
         if self._heart_beat_interval is not None and self._heart_beat_interval > 0:
             self._heart_beat_task = asyncio.create_task(self._heart_beat())
 
         _LOGGER.debug("Connected to %s", self.host)
-        # self._avr.dispatcher.send(const.SIGNAL_AVR_EVENT, const.EVENT_CONNECTED)
+        self._avr.dispatcher.send(const.SIGNAL_TELNET_EVENT, const.EVENT_CONNECTED)
 
     async def disconnect(self):
         """Disconnect from the AV Receiver."""
@@ -116,7 +115,7 @@ class TelnetConnection(ABC):
         self._state = const.STATE_DISCONNECTED
 
         _LOGGER.debug("Disconnected from %s", self.host)
-        # self._avr.dispatcher.send(const.SIGNAL_AVR_EVENT, const.EVENT_DISCONNECTED)
+        self._avr.dispatcher.send(const.SIGNAL_TELNET_EVENT, const.EVENT_DISCONNECTED)
 
     async def _disconnect(self):
         """Cancel response handler and pending tasks."""
@@ -155,7 +154,7 @@ class TelnetConnection(ABC):
             self._state = const.STATE_DISCONNECTED
 
         _LOGGER.debug("Disconnected from %s: %s", self.host, error)
-        # self._avr.dispatcher.send(const.SIGNAL_HEOS_EVENT, const.EVENT_DISCONNECTED)
+        self._avr.dispatcher.send(const.SIGNAL_TELNET_EVENT, const.EVENT_DISCONNECTED)
 
     async def _reconnect(self):
         """Perform core reconnection logic."""
@@ -210,14 +209,12 @@ class TelnetConnection(ABC):
         while True:
             time_since_last_command = datetime.utcnow() - self._last_command_time
             threshold = timedelta(milliseconds=self._message_interval_limit)
-            wait_time = 0.005
+            wait_time = self._message_interval_limit / 1000  # ms -> s
             if time_since_last_command > threshold:
                 next_command = None
                 try:
                     _, next_command = self._queued_commands.popitem(last=False)
-                    print(next_command)
                     if next_command is not None:
-                        print("here")
                         _LOGGER.info("Popped command: %s", next_command["message"])
                         self._writer.write(next_command["message"])
                         await self._writer.drain()
@@ -243,10 +240,9 @@ class TelnetConnection(ABC):
         if resp.state_update == {}:
             _LOGGER.debug("No state update in message: %s", resp.message)
             return
-        self._avr.update_state(resp.state_update)
-        # self._avr.dispatcher.send(
-        #     const.SIGNAL_STATE_UPDATE, resp.message, result
-        # )
+        updated = self._avr.update_state(resp.state_update)
+        if updated:
+            self._avr.dispatcher.send(const.SIGNAL_STATE_UPDATE, resp.message)
         _LOGGER.debug("Event received: %s", resp.state_update)
 
     @property
