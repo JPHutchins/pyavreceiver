@@ -32,6 +32,8 @@ SIGNAL_STATE_UPDATE = "state_update"
 
 ATTR_POWER = "power"
 ATTR_VOLUME = "volume"
+ATTR_VOLUME_UP = "volume_up"
+ATTR_VOLUME_DOWN = "volume_down"
 ATTR_LFE_LEVEL = "lfe_level"
 ATTR_MUTE = "mute"
 ATTR_SOURCE = "source"

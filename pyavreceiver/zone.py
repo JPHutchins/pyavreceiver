@@ -16,7 +16,7 @@ class Zone:
         val = self._avr.state.get(self._zone_prefix + name)
         return val if val is not None else "Unknown"
 
-    def set(self, name: str, val) -> bool:
+    def set(self, name: str, val=None) -> bool:
         """Request the receiver set the name to val."""
         # pylint: disable=protected-access
         command = self._avr._connection._command_lookup[
@@ -108,11 +108,11 @@ class Zone:
 
     def volume_down(self) -> bool:
         """Request the receiver turn the volume down."""
-        return self.set(const.ATTR_VOLUME, const.VAL_DOWN)
+        return self.set(const.ATTR_VOLUME_UP)
 
     def volume_up(self) -> bool:
         """Request the receiver turn the volume up."""
-        return self.set(const.ATTR_VOLUME, const.VAL_UP)
+        return self.set(const.ATTR_VOLUME_DOWN)
 
     def set_dialog_level(self, val) -> bool:
         """Request the receiver set dialog level to val."""

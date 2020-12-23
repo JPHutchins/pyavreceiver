@@ -30,17 +30,20 @@ class DenonTelnetCommand(TelnetCommand):
         self._val_translate = {"True": "ON", "False": "OFF"}
         self._message = message
 
-    def set_val(self, val) -> str:
+    def set_val(self, val=None) -> str:
         """Format the command with argument and return."""
-        val = self._val_translate.get(str(val)) or val
-        try:
-            val = val.upper()
-        except AttributeError:
-            pass
-        message = (
-            f"{self._command}{self._val_pfx}{self._func(val, zero=self._zero)}"
-            f"{denon_const.TELNET_SEPARATOR}"
-        )
+        if val is not None:
+            val = self._val_translate.get(str(val)) or val
+            try:
+                val = val.upper()
+            except AttributeError:
+                pass
+            message = (
+                f"{self._command}{self._val_pfx}{self._func(val, zero=self._zero)}"
+                f"{denon_const.TELNET_SEPARATOR}"
+            )
+        else:
+            message = f"{self._command}{denon_const.TELNET_SEPARATOR}"
         return DenonTelnetCommand(
             self._name,
             self._command,

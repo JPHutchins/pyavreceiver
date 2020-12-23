@@ -73,6 +73,8 @@ def test_generate_commands(command_dict):
     assert command_lookup[const.ATTR_VOLUME].set_val(-5).message == "MV75\r"
     assert command_lookup[const.ATTR_VOLUME].set_val(-30.5).message == "MV495\r"
     assert command_lookup[const.ATTR_VOLUME].set_query().message == "MV?\r"
+    assert command_lookup[const.ATTR_VOLUME_UP].set_val().message == "MVUP\r"
+    assert command_lookup[const.ATTR_VOLUME_DOWN].set_val().message == "MVDOWN\r"
 
     assert command_lookup[const.ATTR_MUTE].set_val(True).message == "MUON\r"
     assert command_lookup[const.ATTR_MUTE].set_val(False).message == "MUOFF\r"

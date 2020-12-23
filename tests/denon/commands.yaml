@@ -16,7 +16,11 @@ MV: # Volume like 40 405 41 415 ^etc:
     ^zero: 80
     ^range:
     - 000
-    - 980
+    - 98
+  UP:
+    ^name: "volume_up"
+  DOWN: 
+    ^name: "volume_down"
 ECO:
   AUTO
 SSLEV:
