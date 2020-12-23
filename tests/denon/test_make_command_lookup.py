@@ -1,4 +1,6 @@
 """Tests for parsing Denon/Marantz messages."""
+import pytest
+
 from pyavreceiver import const
 from pyavreceiver.denon.commands import get_command_lookup
 from pyavreceiver.denon.parse import parse
@@ -57,11 +59,13 @@ def test_parse():
 def test_generate_commands(command_dict):
     """Test creation of command messages."""
     command_lookup = get_command_lookup(command_dict)
-    print(command_lookup["volume"])
 
+    with pytest.raises(Exception):
+        _ = command_lookup[const.ATTR_POWER].message
     assert command_lookup[const.ATTR_POWER].set_val(True).message == "PWON\r"
     assert command_lookup[const.ATTR_POWER].set_val(False).message == "PWOFF\r"
     assert command_lookup[const.ATTR_POWER].set_query().message == "PW?\r"
+    assert command_lookup[const.ATTR_POWER].name == "power"
 
     assert command_lookup[const.ATTR_VOLUME].set_val(-5).message == "MV75\r"
     assert command_lookup[const.ATTR_VOLUME].set_val(-30.5).message == "MV495\r"
