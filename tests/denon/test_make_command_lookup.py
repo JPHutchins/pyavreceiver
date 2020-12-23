@@ -3,6 +3,7 @@ import pytest
 
 from pyavreceiver import const
 from pyavreceiver.denon.commands import get_command_lookup
+from pyavreceiver.denon.error import DenonCannotParse
 from pyavreceiver.denon.parse import parse
 
 
@@ -17,7 +18,7 @@ def test_parse():
     assert db_to_num(9.99, 0) == "10"
     assert db_to_num(10.75, 0) == "11"
 
-    with pytest.raises(Exception):
+    with pytest.raises(DenonCannotParse):
         _ = num_to_db("3859")
 
     assert num_to_db("0", 0) == 0

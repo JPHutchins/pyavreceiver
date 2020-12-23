@@ -179,10 +179,18 @@ def test_state_update_dict(command_dict):
     assert DenonMessage("PSNEWPARAM", command_dict).state_update == {"PSNEWPARAM": None}
 
 
+def test_bad_value_handling(command_dict):
+    """Test error handling for values that don't conform to spec."""
+    assert DenonMessage("MVSTRING", command_dict).state_update == {
+        "volume/STRING": None
+    }
+    assert DenonMessage("MV1000", command_dict).state_update == {}
+
+
 def test_sequence(command_dict):
     """Test a long sequence."""
     seq = [
-        "PWON"
+        "PW?"
         "PWON"
         "MV56"
         "MVMAX 80"

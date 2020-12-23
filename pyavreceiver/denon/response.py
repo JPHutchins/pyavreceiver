@@ -1,6 +1,7 @@
 """Implement a Denon telnet message."""
 
 import logging
+from pyavreceiver.denon.error import DenonCannotParse
 
 from pyavreceiver.response import Message
 from pyavreceiver.denon.parse import parse
@@ -35,7 +36,10 @@ class DenonMessage(Message):
         """Parse message, assign attributes, return a state update dict."""
         self._msg = msg
         self._cmd, self._prm, self._raw_val = self.separate(msg)
-        self._val = self.parse_value(self._cmd, self._prm, self._raw_val)
+        try:
+            self._val = self.parse_value(self._cmd, self._prm, self._raw_val)
+        except DenonCannotParse:
+            return {}
         return self._make_state_update()
 
     def _make_state_update(self) -> dict:
