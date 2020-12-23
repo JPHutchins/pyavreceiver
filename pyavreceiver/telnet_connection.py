@@ -22,12 +22,14 @@ class TelnetConnection(ABC):
         avr,
         host: str,
         *,
+        port: int = const.CLI_PORT,
         timeout: float = const.DEFAULT_TIMEOUT,
         heart_beat: Optional[float] = const.DEFAULT_HEART_BEAT,
     ):
         """Init the connection."""
         self._avr = avr
-        self.host = host  # type: str
+        self.host = host
+        self.port = port
         self.commands = None
         self._command_dict = {}
         self._command_lookup = {}
@@ -88,7 +90,7 @@ class TelnetConnection(ABC):
     async def _connect(self):
         """Make Telnet connection."""
         try:
-            open_future = telnetlib3.open_connection(self.host, const.CLI_PORT)
+            open_future = telnetlib3.open_connection(self.host, self.port)
             self._reader, self._writer = await asyncio.wait_for(
                 open_future, self.timeout
             )
