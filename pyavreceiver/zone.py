@@ -118,6 +118,10 @@ class Zone:
         """Request the receiver set dialog level to val."""
         return self.set(const.ATTR_DIALOG_LEVEL, val)
 
+    def set_dsp_dynamic_range(self, val) -> bool:
+        """Request the receiver set the DRC to val."""
+        return self.set(const.ATTR_DSP_DRC, val)
+
     def set_dsp_mode(self, val: str) -> bool:
         """Request the receiver set DSP mode to val."""
         return self.set(const.ATTR_DSP_MODE, val)
@@ -131,7 +135,7 @@ class Zone:
         return self.set(const.ATTR_VOLUME, val)
 
     def set_meta_dynamic_range(self, val: str) -> bool:
-        """Request the receiver set volume to val."""
+        """Request the receiver set meta DRC to val."""
         return self.set(const.ATTR_META_DRC, val)
 
     def set_lfe_level(self, val: float) -> bool:
