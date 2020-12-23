@@ -32,7 +32,7 @@ class DenonTelnetConnection(TelnetConnection):
 
     async def _load_command_dict(self, path=None):
         async with aiofiles.open(
-            "/home/jp/pyavreceiver/pyavreceiver/denon/commands.yaml"
+            "pyavreceiver/denon/commands.yaml"
         ) as file:
             self._command_dict = yaml.safe_load(await file.read())
 
