@@ -25,12 +25,6 @@ class Message(ABC):
 
     @property
     @abstractmethod
-    def event(self) -> str:
-        """Return event_telnet."""
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
     def command(self) -> str:
         """Return the command and parameter category."""
         raise NotImplementedError

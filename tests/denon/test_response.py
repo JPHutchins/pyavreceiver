@@ -103,6 +103,9 @@ def test_attribute_assignment(command_dict):
     """Test assignment of attr."""
     msg = DenonMessage("PWON", command_dict)
     assert msg.parsed == ("PW", None, "ON")
+    assert str(msg) == "PWON"
+    assert repr(msg) == "PWON"
+    assert msg.command == "PW"
 
     msg = DenonMessage("MV75", command_dict)
     assert msg.parsed == ("MV", None, -5)
@@ -118,9 +121,16 @@ def test_attribute_assignment(command_dict):
     assert msg.parsed == ("CV", "FL", 1)
     assert msg.message == "CVFL 51"
     assert msg.raw_value == "51"
+    assert msg.command == "CVFL"
 
     msg = DenonMessage("MSDOLBY D+ +PL2X C", command_dict)
     assert msg.parsed == ("MS", None, "DOLBY D+ +PL2X C")
+
+    msg = DenonMessage("PSDYNVOL LOW", command_dict)
+    assert msg.parsed == ("PS", "DYNVOL", "LOW")
+    assert msg.message == "PSDYNVOL LOW"
+    assert msg.raw_value == "LOW"
+    assert msg.command == "PSDYNVOL"
 
 
 def test_state_update_dict(command_dict):

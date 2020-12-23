@@ -134,7 +134,7 @@ class DenonMessage(Message):
         if function_name == const.FUNCTION_VOLUME:
             parser = parse[const.FUNCTION_NUM_TO_DB]
             return parser(num=val, zero=entry[const.COMMAND_ZERO])
-        raise NotImplementedError
+        raise Exception
 
     @property
     def parsed(self) -> tuple:
@@ -152,10 +152,6 @@ class DenonMessage(Message):
     @property
     def state_update(self) -> dict:
         return self._state_update
-
-    @property
-    def event(self) -> str:
-        return const.EVENT_TELNET
 
     @property
     def command(self) -> str:
