@@ -92,7 +92,10 @@ class DenonMessage(Message):
             # No match found: return new entry, assume val after last space
             words = rem.split(" ")
             if len(words) < 2:
-                raise Exception
+                _LOGGER.warning(
+                    "Added new event with empty value: %s, %s, None", *cur, prm
+                )
+                return (*cur, words[0], None)
             prm = " ".join(words[:-1]).strip()
             val = words[-1].strip()
             _LOGGER.info("Added new event: %s, %s, %s", *cur, prm, val)

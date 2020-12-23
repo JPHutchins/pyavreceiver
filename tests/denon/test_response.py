@@ -1,6 +1,4 @@
 """Test responses from Denon/Marantz."""
-import pytest
-
 from pyavreceiver.denon.response import DenonMessage
 
 
@@ -15,8 +13,11 @@ def test_separate(message_none):
     assert message_none.separate("CVFL60") == ("CV", "FL", "60")
     assert message_none.separate("CV FHL 44") == ("CV", "FHL", "44")
     assert message_none.separate("CVNEW SPEC 55") == ("CV", "NEW SPEC", "55")
-    with pytest.raises(Exception):
-        assert message_none.separate("CVUNKNOWNCOMMAND55") == (None, None, None)
+    assert message_none.separate("CVUNKNOWNCOMMAND55") == (
+        "CV",
+        "UNKNOWNCOMMAND55",
+        None,
+    )
 
     assert message_none.separate("MUON") == ("MU", None, "ON")
 
@@ -51,8 +52,11 @@ def test_separate(message_none):
     assert message_none.separate("PSDCO OFF") == ("PS", "DCO", "OFF")
     assert message_none.separate("PSLFE -8") == ("PS", "LFE", "-8")
     assert message_none.separate("PSNEWPARAM OK") == ("PS", "NEWPARAM", "OK")
-    with pytest.raises(Exception):
-        assert message_none.separate("PSUNKNOWNCOMMAND55") == (None, None, None)
+    assert message_none.separate("PSUNKNOWNCOMMAND55") == (
+        "PS",
+        "UNKNOWNCOMMAND55",
+        None,
+    )
 
     assert message_none.separate("MV60") == ("MV", None, "60")
     assert message_none.separate("MV595") == ("MV", None, "595")
@@ -172,6 +176,7 @@ def test_state_update_dict(command_dict):
     assert DenonMessage("PSNEWPARAM ANYVALUE", command_dict).state_update == {
         "PSNEWPARAM": "ANYVALUE"
     }
+    assert DenonMessage("PSNEWPARAM", command_dict).state_update == {"PSNEWPARAM": None}
 
 
 def test_sequence(command_dict):
