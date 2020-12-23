@@ -108,11 +108,11 @@ class Zone:
 
     def volume_down(self) -> bool:
         """Request the receiver turn the volume down."""
-        return self.set(const.ATTR_VOLUME_UP)
+        return self.set(const.ATTR_VOLUME_DOWN)
 
     def volume_up(self) -> bool:
         """Request the receiver turn the volume up."""
-        return self.set(const.ATTR_VOLUME_DOWN)
+        return self.set(const.ATTR_VOLUME_UP)
 
     def set_dialog_level(self, val) -> bool:
         """Request the receiver set dialog level to val."""
