@@ -9,28 +9,20 @@ class Parse:
         return getattr(self, key)
 
     @staticmethod
-    def num_to_db(num: str = None, zero: int = None):
+    def num_to_db(num: str = None, zero: int = 80):
         """Convert the string num to a decibel float."""
-        if num is None:
-            return None
-        if zero is None:
-            zero = 80
-
         if len(num) == 3:
             vol = int(num) / 10
         elif int(num) < 100 and int(num) > -100:
             vol = int(num)
         else:
-            return None
+            raise Exception
 
         return vol - zero
 
     @staticmethod
     def db_to_num(decibel: int = None, zero: int = 80, str_len: int = 0):
         """Convert the float decibel to a string num."""
-        if decibel is None:
-            return None
-
         decibel = round(decibel * 2) / 2
 
         vol = decibel + zero

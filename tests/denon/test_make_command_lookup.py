@@ -17,6 +17,9 @@ def test_parse():
     assert db_to_num(9.99, 0) == "10"
     assert db_to_num(10.75, 0) == "11"
 
+    with pytest.raises(Exception):
+        _ = num_to_db("3859")
+
     assert num_to_db("0", 0) == 0
     assert num_to_db("80", 80) == 0
     assert num_to_db("805", 80) == 0.5
