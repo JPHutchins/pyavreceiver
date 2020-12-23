@@ -20,7 +20,8 @@ class DenonReceiver(AVReceiver):
         upnp: bool = True,
         timeout: float = denon_const.DEFAULT_TIMEOUT,
         heart_beat: Optional[float] = denon_const.DEFAULT_HEART_BEAT,
-        dispatcher: Dispatcher = Dispatcher()
+        dispatcher: Dispatcher = Dispatcher(),
+        zone: DenonZone = DenonZone
     ):
         super().__init__(
             host,
@@ -30,6 +31,7 @@ class DenonReceiver(AVReceiver):
             timeout=timeout,
             heart_beat=heart_beat,
             dispatcher=dispatcher,
+            zone=zone,
         )
         self._connection = DenonTelnetConnection(
             self,
@@ -37,4 +39,3 @@ class DenonReceiver(AVReceiver):
             timeout=timeout,
             heart_beat=heart_beat,
         )
-        self._main_zone = DenonZone(self)

@@ -19,7 +19,8 @@ class AVReceiver:
         upnp: bool = True,
         timeout: float = const.DEFAULT_TIMEOUT,
         heart_beat: Optional[float] = const.DEFAULT_HEART_BEAT,
-        dispatcher: Dispatcher = Dispatcher()
+        dispatcher: Dispatcher = Dispatcher(),
+        zone: Zone = Zone
     ):
         """Init the device."""
         self._host = host
@@ -31,6 +32,7 @@ class AVReceiver:
         self._connections = []
         self._state = defaultdict()
         self._main_zone = None  # type: Zone
+        self._zone = zone
 
     async def init(
         self,
@@ -42,6 +44,7 @@ class AVReceiver:
         await self._connection.init(
             auto_reconnect=auto_reconnect, reconnect_delay=reconnect_delay
         )
+        self._main_zone = self._zone(self)
 
     async def connect(
         self,

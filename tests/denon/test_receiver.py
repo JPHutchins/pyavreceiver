@@ -1,6 +1,5 @@
 """Test the DenonReceiver class."""
 from pyavreceiver.dispatch import Dispatcher
-from pyavreceiver.zone import Zone
 from pyavreceiver import const
 from pyavreceiver.denon.receiver import DenonReceiver
 
@@ -12,7 +11,7 @@ def test_receiver_init():
     assert avr.connection_state == const.STATE_DISCONNECTED
     assert avr.state == {}
     assert isinstance(avr.dispatcher, Dispatcher)
-    assert isinstance(avr.main, Zone)
+    assert avr.main is None
 
 
 def test_receiver_update():
