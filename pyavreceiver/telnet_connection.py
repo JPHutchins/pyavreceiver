@@ -53,15 +53,15 @@ class TelnetConnection(ABC):
 
     @abstractmethod
     async def _load_command_dict(self, path=None):
-        raise NotImplementedError
+        """Load the commands YAML."""
 
     @abstractmethod
     def _get_command_lookup(self, command_dict):
-        raise NotImplementedError
+        """Create a command lookup dict."""
 
     @abstractmethod
     async def _response_handler(self):
-        raise NotImplementedError
+        """Handle messages received from the device."""
 
     def _heartbeat_command(self):
         command = self._command_lookup[const.ATTR_POWER].set_query()
