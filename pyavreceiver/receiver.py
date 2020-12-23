@@ -66,7 +66,7 @@ class AVReceiver:
         """Handle a state update."""
         update = False
         for attr, val in state_update.items():
-            if self._state[attr] != val:
+            if attr not in self._state or self._state[attr] != val:
                 self._state[attr] = val
                 update = True
         return update
