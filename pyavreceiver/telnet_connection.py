@@ -136,6 +136,13 @@ class TelnetConnection(ABC):
             except asyncio.CancelledError:
                 pass
             self._response_handler_task = None
+        if self._command_queue_task:
+            self._command_queue_task.cancel()
+            try:
+                await self._command_queue_task
+            except asyncio.CancelledError:
+                pass
+            self._command_queue_task = None
         if self._writer:
             self._writer.close()
             self._writer = None
