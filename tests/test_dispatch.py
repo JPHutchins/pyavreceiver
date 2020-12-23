@@ -2,13 +2,12 @@
 
 import asyncio
 import functools
+import pytest
 
 from pyavreceiver.dispatch import Dispatcher
 
-from tests import async_test
 
-
-@async_test
+@pytest.mark.asyncio
 async def test_connect(handler):
     """Tests the connect function."""
     # Arrange
@@ -19,7 +18,7 @@ async def test_connect(handler):
     assert handler in dispatcher.signals["TEST"]
 
 
-@async_test
+@pytest.mark.asyncio
 async def test_disconnect(handler):
     """Tests the disconnect function."""
     # Arrange
@@ -31,7 +30,7 @@ async def test_disconnect(handler):
     assert handler not in dispatcher.signals["TEST"]
 
 
-@async_test
+@pytest.mark.asyncio
 async def test_disconnect_all(handler):
     """Tests the disconnect all function."""
     # Arrange
@@ -48,7 +47,7 @@ async def test_disconnect_all(handler):
     assert handler not in dispatcher.signals["TEST3"]
 
 
-@async_test
+@pytest.mark.asyncio
 async def test_already_disconnected(handler):
     """Tests that disconnect can be called more than once."""
     # Arrange
@@ -61,7 +60,7 @@ async def test_already_disconnected(handler):
     assert handler not in dispatcher.signals["TEST"]
 
 
-@async_test
+@pytest.mark.asyncio
 async def test_send_async_handler(async_handler):
     """Tests sending to async handlers."""
     # Arrange
@@ -73,7 +72,7 @@ async def test_send_async_handler(async_handler):
     assert async_handler.fired
 
 
-@async_test
+@pytest.mark.asyncio
 async def test_send_async_partial_handler(async_handler):
     """Tests sending to async handlers."""
     # Arrange
@@ -86,7 +85,7 @@ async def test_send_async_partial_handler(async_handler):
     assert async_handler.fired
 
 
-@async_test
+@pytest.mark.asyncio
 async def test_send(handler):
     """Tests sending to async handlers."""
     # Arrange
@@ -100,7 +99,7 @@ async def test_send(handler):
     assert handler.args[0] == args
 
 
-@async_test
+@pytest.mark.asyncio
 async def test_custom_connect_and_send(handler):
     """Tests using the custom connect and send implementations."""
     # Arrange
