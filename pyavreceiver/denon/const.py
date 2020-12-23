@@ -1,5 +1,7 @@
 """Define constants for Denon/Marantz."""
 
+CLI_PORT = 23
+
 MESSAGE_INTERVAL_LIMIT = 50  # milliseconds
 MESSAGE_RESPONSE_TIMEOUT = 250  # milliseconds
 

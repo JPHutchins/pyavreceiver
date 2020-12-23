@@ -22,11 +22,12 @@ class DenonTelnetConnection(TelnetConnection):
         avr,
         host,
         *,
+        port: int = denon_const.CLI_PORT,
         timeout: float = denon_const.DEFAULT_TIMEOUT,
         heart_beat: Optional[float] = denon_const.DEFAULT_HEART_BEAT,
     ):
         """Init the connection."""
-        super().__init__(avr, host, timeout=timeout, heart_beat=heart_beat)
+        super().__init__(avr, host, port=port, timeout=timeout, heart_beat=heart_beat)
         self._message_interval_limit = denon_const.MESSAGE_INTERVAL_LIMIT
 
     async def _load_command_dict(self, path=None):
