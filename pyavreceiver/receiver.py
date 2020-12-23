@@ -82,6 +82,11 @@ class AVReceiver:
         return self._connection.state
 
     @property
+    def host(self) -> str:
+        """Get the host."""
+        return self._host
+
+    @property
     def main(self) -> Zone:
         """Get the main zone object."""
         return self._main_zone
