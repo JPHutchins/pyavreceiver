@@ -2,6 +2,7 @@
 import pytest
 
 from pyavreceiver import const
+from pyavreceiver.error import AVReceiverInvalidArgumentError
 from pyavreceiver.denon.commands import get_command_lookup
 from pyavreceiver.denon.error import DenonCannotParse
 from pyavreceiver.denon.parse import parse
@@ -60,9 +61,53 @@ def test_parse():
     assert db_num_db(-0.5, 50)
 
 
+def test_make_command_lookup(command_dict):
+    """Test creation of command lookup for values dict and min/max range."""
+    command_lookup = get_command_lookup(command_dict)
+
+    command = command_lookup[const.ATTR_VOLUME]
+    assert command.values.min == -80
+    assert command.values.max == 18
+
+    command = command_lookup[const.ATTR_BASS]
+    assert command.values["min"] == -6
+    assert command.values["max"] == 6
+
+    command = command_lookup["channel_level_fl"]
+    assert command.values.min == -12
+    assert command.values["max"] == 12
+
+    command = command_lookup[const.ATTR_LFE_LEVEL]
+    assert command.values["min"] == -10
+    assert command.values["max"] == 0
+
+    command = command_lookup[const.ATTR_DSP_DRC]
+    assert str(command.values)
+    assert command.values["off"] == "OFF"
+    assert command.values.off == "OFF"
+    assert command.values["low"] == "LIT"
+    assert command.values["lit"] == "LIT"
+    assert command.values.medium == "MED"
+    assert command.values.med == "MED"
+    assert command.values["high"] == "HEV"
+    assert command.values["hev"] == "HEV"
+    with pytest.raises(AVReceiverInvalidArgumentError):
+        assert command.values.de == "HEV"
+    assert command.values.max is None
+    assert command.values["max"] is None
+
+    command = command_lookup["audyssey_multi_eq"]
+    assert str(command.values)
+    assert command.values["off"] == "OFF"
+    assert command.values["audyssey"] == "AUDYSSEY"
+    assert command.values["byp.lr"] == "BYP.LR"
+
+
 def test_generate_commands(command_dict):
     """Test creation of command messages."""
     command_lookup = get_command_lookup(command_dict)
+
+    assert "channel_level_fr" in command_lookup
 
     with pytest.raises(Exception):
         _ = command_lookup[const.ATTR_POWER].message
@@ -105,12 +150,10 @@ def test_generate_commands(command_dict):
 
     assert command_lookup[const.ATTR_DSP_DRC].set_val(False).message == "PSDYNVOL OFF\r"
     assert command_lookup[const.ATTR_DSP_DRC].set_query().message == "PSDYNVOL ?\r"
-    for val in command_lookup[const.ATTR_DSP_DRC].values:
-        if val:
-            assert (
-                command_lookup[const.ATTR_DSP_DRC].set_val(val).message
-                == f"PSDYNVOL {val}\r"
-            )
+    assert command_lookup[const.ATTR_DSP_DRC].set_val("HEV").message == "PSDYNVOL HEV\r"
+    assert (
+        command_lookup[const.ATTR_DSP_DRC].set_val("high").message == "PSDYNVOL HEV\r"
+    )
 
     assert command_lookup[const.ATTR_LFE_LEVEL].set_val(0).message == "PSLFE 0\r"
     assert command_lookup[const.ATTR_LFE_LEVEL].set_val(-7).message == "PSLFE -7\r"

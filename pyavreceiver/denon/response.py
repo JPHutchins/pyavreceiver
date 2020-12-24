@@ -53,21 +53,20 @@ class DenonMessage(Message):
             and const.COMMAND_PARAMS in entry
         ):
             key = entry[const.COMMAND_NAME]
-            key = f"{key}/{self._prm}" if self._prm else key
+            key = f"{key}_{self._prm.lower()}" if self._prm else key
             entry = entry.get(self._prm)
         elif isinstance(entry, dict):
             key = (
                 entry.get(const.COMMAND_NAME)
                 or key.get(const.COMMAND_NAME)
-                or f"{self._cmd}{self._prm or ''}"
+                or f"{self._cmd}_{self._prm or ''}"
             )
             tmp = entry.get(self._raw_val)
             val = tmp if tmp is not None else self._val
             entry = entry.get(self._prm)
         if isinstance(entry, dict):
             key = (
-                self._command_dict[self._cmd][self._prm].get(const.COMMAND_NAME)
-                or key + self._prm
+                self._command_dict[self._cmd][self._prm].get(const.COMMAND_NAME) or key
             )
             val = entry.get(self._raw_val) or self._val
         return {key: val}
@@ -140,7 +139,11 @@ class DenonMessage(Message):
             return val
         if function_name == const.FUNCTION_VOLUME:
             parser = parse[const.FUNCTION_NUM_TO_DB]
-            return parser(num=val, zero=entry[const.COMMAND_ZERO])
+            return parser(
+                num=val,
+                zero=entry[const.COMMAND_ZERO],
+                strings=entry.get(const.COMMAND_STRINGS),
+            )
         raise Exception
 
     @property

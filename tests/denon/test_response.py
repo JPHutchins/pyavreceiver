@@ -44,6 +44,7 @@ def test_separate(message_none):
         "YET ANOTHER POINTLESS DSP",
     )
 
+    assert message_none.separate("PSDELAY 000") == ("PS", "DELAY", "000")
     assert message_none.separate("PSTONE CTRL ON") == ("PS", "TONE CTRL", "ON")
     assert message_none.separate("PSTONE CTRLOFF") == ("PS", "TONE CTRL", "OFF")
     assert message_none.separate("PSSB MTRX ON") == ("PS", "SB", "MTRX ON")
@@ -136,6 +137,12 @@ def test_attribute_assignment(command_dict):
     assert msg.raw_value == "LOW"
     assert msg.command == "PSDYNVOL"
 
+    msg = DenonMessage("PSDELAY 000", command_dict)
+    assert msg.parsed == ("PS", "DELAY", "000")
+    assert msg.message == "PSDELAY 000"
+    assert msg.raw_value == "000"
+    assert msg.command == "PSDELAY"
+
 
 def test_state_update_dict(command_dict):
     """Test create the update dict."""
@@ -144,9 +151,12 @@ def test_state_update_dict(command_dict):
     assert DenonMessage("PWSTANDBY", command_dict).state_update == {"power": False}
     assert DenonMessage("MV75", command_dict).state_update == {"volume": -5}
     assert DenonMessage("MV56", command_dict).state_update == {"volume": -24}
-    assert DenonMessage("CVFL 51", command_dict).state_update == {"channel_level/FL": 1}
+    assert DenonMessage("CVFL 51", command_dict).state_update == {"channel_level_fl": 1}
     assert DenonMessage("SSLEVFL 50", command_dict).state_update == {
-        "channel_level/FL": 0
+        "channel_level_fl": 0
+    }
+    assert DenonMessage("PSNEWPARAM LOW", command_dict).state_update == {
+        "PS_NEWPARAM": "LOW"
     }
     assert DenonMessage("MSDOLBY D+ +PL2X C", command_dict).state_update == {
         "sound_mode": "DOLBY D+ +PL2X C"
@@ -174,17 +184,34 @@ def test_state_update_dict(command_dict):
         "NEWPARAM": "ANYVALUE"
     }
     assert DenonMessage("PSNEWPARAM ANYVALUE", command_dict).state_update == {
-        "PSNEWPARAM": "ANYVALUE"
+        "PS_NEWPARAM": "ANYVALUE"
     }
-    assert DenonMessage("PSNEWPARAM", command_dict).state_update == {"PSNEWPARAM": None}
+    assert DenonMessage("PSNEWPARAM", command_dict).state_update == {
+        "PS_NEWPARAM": None
+    }
 
 
 def test_bad_value_handling(command_dict):
     """Test error handling for values that don't conform to spec."""
     assert DenonMessage("MVSTRING", command_dict).state_update == {
-        "volume/STRING": None
+        "volume_string": None
     }
     assert DenonMessage("MV1000", command_dict).state_update == {}
+
+
+def test_multiple_types(command_dict):
+    """Test handling multiple types of value."""
+    assert DenonMessage("PSDIL OFF", command_dict).state_update == {
+        "dialog_level": False
+    }
+    assert DenonMessage("PSDIL ON", command_dict).state_update == {"dialog_level": True}
+    assert DenonMessage("PSDIL 55", command_dict).state_update == {"dialog_level": 5}
+    assert DenonMessage("PSDIL 45", command_dict).state_update == {"dialog_level": -5}
+
+
+def test_unnamed_param(command_dict):
+    """Test an unnamed parsed parameter."""
+    assert DenonMessage("PSDELAY 000", command_dict).state_update == {"PS_DELAY": "000"}
 
 
 def test_sequence(command_dict):
