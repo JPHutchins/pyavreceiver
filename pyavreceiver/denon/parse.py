@@ -10,10 +10,13 @@ class Parse:
         return getattr(self, key)
 
     @staticmethod
-    def num_to_db(num: str = None, zero: int = 80):
+    def num_to_db(num: str = None, zero: int = 80, strings=None):
         """Convert the string num to a decibel float."""
+        zero = 0 if zero is None else zero
+        if strings and num in strings:
+            return strings[num]
         try:
-            if len(num) == 3:
+            if len(num) == 3 and num[0] != "-":
                 vol = int(num) / 10
             elif int(num) < 100 and int(num) > -100:
                 vol = int(num)
@@ -23,18 +26,25 @@ class Parse:
             return vol - zero
         except TypeError:
             return num
+        except ValueError:
+            print(num, zero, strings)
 
     @staticmethod
-    def db_to_num(decibel: int = None, zero: int = 80, str_len: int = 0):
+    def db_to_num(decibel: int = None, zero: int = 80, str_len: int = 0, strings=None):
         """Convert the float decibel to a string num."""
         try:
-            decibel = round(decibel * 2) / 2
+            zero = 0 if zero is None else zero
+
+            decibel = round(decibel * 2)
+            if decibel != 0:
+                decibel /= 2
 
             vol = decibel + zero
             if vol - math.ceil(vol) != 0:
                 vol *= 10
 
             out = str(int(vol))
+
             if padding := str_len - len(out) > 0:
                 pad = ""
                 while padding > -1:
