@@ -249,7 +249,7 @@ class TelnetConnection(ABC):
             except Exception as err:
                 # TODO: error handling
                 _LOGGER.critical(err)
-                await asyncio.sleep(.05)
+                await asyncio.sleep(0.05)
 
     def _handle_event(self, resp: Message):
         """Handle a response event."""

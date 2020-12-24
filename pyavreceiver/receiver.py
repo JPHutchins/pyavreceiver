@@ -99,7 +99,7 @@ class AVReceiver:
     def state(self) -> defaultdict:
         """Get the current state."""
         return self._state
-    
+
     @property
     def power(self) -> str:
         """The state of power."""
