@@ -40,9 +40,14 @@ class Zone:
         """The dictionary of available commands."""
         return self._commands
 
-    # Universal Audio Video Receiver attributes -------------------------------
-    # in alphabetical order by property
-    # setters prefixed with set_ and grouped below their property
+
+class MainZone(Zone):
+    """Define an Audio/Video Receiver main zone.
+
+    This class represents the attributes of AVR Main Zones.
+    Attributes are ordered alphabetically.  Setters are prefixed with set_ and grouped with
+    their corresponding property.
+    """
 
     @property
     def bass(self) -> int:
