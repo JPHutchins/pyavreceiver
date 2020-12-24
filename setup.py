@@ -27,7 +27,7 @@ setup(
     install_requires=[],
     tests_require=["tox>=3.5.0,<4.0.0"],
     platforms=["any"],
-    keywords="denon",
+    keywords="denon marantz receiver",
     zip_safe=False,
     classifiers=[
         "Development Status :: 4 - Beta",
