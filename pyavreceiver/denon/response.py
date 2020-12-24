@@ -60,7 +60,7 @@ class DenonMessage(Message):
             val = _ if _ is not None else self._val
             entry = entry.get(self._prm)
             val = entry.get(self._raw_val) or self._val
-            
+
             key = (
                 self._command_dict[self._cmd][self._prm].get(const.COMMAND_NAME) or key
             )
