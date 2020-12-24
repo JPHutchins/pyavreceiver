@@ -39,16 +39,23 @@ class DenonTelnetConnection(TelnetConnection):
 
     async def _response_handler(self):
         while True:
-            msg = await self._reader.readuntil(
-                separator=denon_const.TELNET_SEPARATOR.encode()
-            )
-            message = msg.decode()[:-1]
-            self._last_activity = datetime.utcnow()
-            resp = DenonMessage(message, command_dict=self._command_dict)
-            self._handle_event(resp)
+            msg = None  # temporary for error detection
+            try:
+                msg = await self._reader.readuntil(
+                    separator=denon_const.TELNET_SEPARATOR.encode()
+                )
+                message = msg.decode()[:-1]
+                self._last_activity = datetime.utcnow()
+                resp = DenonMessage(message, command_dict=self._command_dict)
+                self._handle_event(resp)
 
-            # Check if this is a response to a previous command
-            if commands := self._expected_responses.get(resp.command):
-                commands.popleft()
-                if not commands:
-                    del commands
+                # Check if this is a response to a previous command
+                if commands := self._expected_responses.get(resp.command):
+                    commands.popleft()
+                    if not commands:
+                        del commands
+            # pylint: disable=broad-except, fixme
+            except Exception as err:
+                # TODO: error handling
+                _LOGGER.critical(err)
+                _LOGGER.critical(msg)

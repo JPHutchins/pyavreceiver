@@ -217,33 +217,39 @@ class TelnetConnection(ABC):
 
     async def _process_command_queue(self):
         while True:
-            time_since_last_command = datetime.utcnow() - self._last_command_time
-            threshold = timedelta(milliseconds=self._message_interval_limit)
-            wait_time = self._message_interval_limit / 1000  # ms -> s
-            if time_since_last_command > threshold:
-                next_command = None
-                try:
-                    _, next_command = self._queued_commands.popitem(last=False)
-                    if next_command is not None:
-                        _LOGGER.info("Popped command: %s", next_command["message"])
-                        self._writer.write(next_command["message"])
-                        await self._writer.drain()
-                        self._last_command_time = datetime.utcnow()
-                        wait_time = self._message_interval_limit / 1000 + 0.002
-                        self._expected_responses[next_command["command"]].append(
-                            ExpectedResponse(
-                                next_command["command"], next_command["val"]
+            try:
+                time_since_last_command = datetime.utcnow() - self._last_command_time
+                threshold = timedelta(milliseconds=self._message_interval_limit)
+                wait_time = self._message_interval_limit / 1000  # ms -> s
+                if time_since_last_command > threshold:
+                    next_command = None
+                    try:
+                        _, next_command = self._queued_commands.popitem(last=False)
+                        if next_command is not None:
+                            _LOGGER.info("Popped command: %s", next_command["message"])
+                            self._writer.write(next_command["message"])
+                            await self._writer.drain()
+                            self._last_command_time = datetime.utcnow()
+                            wait_time = self._message_interval_limit / 1000 + 0.002
+                            self._expected_responses[next_command["command"]].append(
+                                ExpectedResponse(
+                                    next_command["command"], next_command["val"]
+                                )
                             )
-                        )
-                except KeyError:
-                    pass
-            else:
-                wait_time = (
-                    threshold.total_seconds()
-                    - time_since_last_command.total_seconds()
-                    + 0.002
-                )
-            await asyncio.sleep(wait_time)
+                    except KeyError:
+                        pass
+                else:
+                    wait_time = (
+                        threshold.total_seconds()
+                        - time_since_last_command.total_seconds()
+                        + 0.002
+                    )
+                await asyncio.sleep(wait_time)
+            # pylint: disable=broad-except, fixme
+            except Exception as err:
+                # TODO: error handling
+                _LOGGER.critical(err)
+                await asyncio.sleep(.05)
 
     def _handle_event(self, resp: Message):
         """Handle a response event."""
