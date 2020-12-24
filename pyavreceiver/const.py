@@ -19,6 +19,7 @@ COMMAND_NAME = "^name"
 COMMAND_PARAMS = "^params"
 COMMAND_RANGE = "^range"
 COMMAND_FUNCTION = "^function"
+COMMAND_STRINGS = "^strings"
 COMMAND_ZERO = "^zero"
 
 EVENT_TELNET = "telnet"
