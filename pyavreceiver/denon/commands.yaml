@@ -7,7 +7,7 @@ MV: # Volume like 40 405 41 415 ^etc:
   ^name: volume
   ^range:
     - 000
-    - 990
+    - 980
   ^function: volume
   ^zero: 80
   MAX:
@@ -22,7 +22,7 @@ MV: # Volume like 40 405 41 415 ^etc:
   DOWN: 
     ^name: "volume_down"
 ECO:
-  AUTO
+  AUTO:
 SSLEV:
   ^name: channel_level
   ^params: True
@@ -262,13 +262,18 @@ PS:
     ^name: dialog_level
     "ON": true
     "OFF": false
-    UP: "up"
-    DOWN: "down"
+    UP:
+      ^name: "dialog_up"
+    DOWN:
+      ^name: "dialog_down"
     ^range:
       - 38
       - 62
     ^zero: 50
     ^function: volume
+    ^strings:
+      "ON": true
+      "OFF": false
   DRC:
     ^name: dynamic_range_control
     AUTO: auto
