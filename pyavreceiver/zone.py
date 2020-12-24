@@ -13,8 +13,7 @@ class Zone:
 
     def get(self, name: str) -> str:
         """Get the current state of the nameibute name."""
-        val = self._avr.state.get(self._zone_prefix + name)
-        return val if val is not None else "Unknown"
+        return self._avr.state.get(self._zone_prefix + name)
 
     def set(self, name: str, val=None) -> bool:
         """Request the receiver set the name to val."""
@@ -110,12 +109,12 @@ class Zone:
 
     @property
     def power(self) -> str:
-        """The state of power."""
-        return self.get(const.ATTR_POWER)
+        """The state of zone power."""
+        return self.get(const.ATTR_ZONE_1_POWER)
 
     def set_power(self, val: bool) -> bool:
-        """Request the receiver set power to val."""
-        return self.set(const.ATTR_POWER, val)
+        """Request the receiver set zone power to val."""
+        return self.set(const.ATTR_ZONE_1_POWER, val)
 
     @property
     def soundmode(self) -> str:

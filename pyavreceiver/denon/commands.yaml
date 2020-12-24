@@ -2,6 +2,10 @@ PW:
   ^name: power
   "ON": true
   STANDBY: false
+ZM:
+  ^name: zone_1_power
+  "ON": true
+  STANDBY: false
 MV: # Volume like 40 405 41 415 ^etc:
   ^params: true
   ^name: volume
@@ -84,9 +88,6 @@ SI:
   IPOD DIRECT:
   USB:
   IPD:
-ZM:
-  "ON": "On"
-  "OFF": "Off"
 SD:
   AUTO:
   HDMI:

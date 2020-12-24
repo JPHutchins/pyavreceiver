@@ -99,3 +99,15 @@ class AVReceiver:
     def state(self) -> defaultdict:
         """Get the current state."""
         return self._state
+    
+    @property
+    def power(self) -> str:
+        """The state of power."""
+        return self.state.get(const.ATTR_POWER)
+
+    def set_power(self, val: bool) -> bool:
+        """Request the receiver set power to val."""
+        # pylint: disable=protected-access
+        command = self._connection._command_lookup[const.ATTR_POWER].set_val(val)
+        self._connection.send_command(command)
+        return True
