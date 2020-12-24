@@ -45,28 +45,27 @@ class DenonMessage(Message):
         entry = self._command_dict.get(self._cmd) or self._cmd
         key = entry
         val = self._val if self._val is not None else self._raw_val
-        if (
-            isinstance(entry, dict)
-            and const.COMMAND_NAME in entry
-            and const.COMMAND_PARAMS in entry
-        ):
-            key = entry[const.COMMAND_NAME]
-            key = f"{key}_{self._prm.lower()}" if self._prm else key
-            entry = entry.get(self._prm)
-        elif isinstance(entry, dict):
+        try:
+            if const.COMMAND_NAME in entry and const.COMMAND_PARAMS in entry:
+                cmd_name = entry[const.COMMAND_NAME]
+                key = f"{cmd_name}_{self._prm.lower()}" if self._prm else cmd_name
+                entry = entry.get(self._prm)
             key = (
                 entry.get(const.COMMAND_NAME)
                 or key.get(const.COMMAND_NAME)
                 or f"{self._cmd}_{self._prm or ''}"
             )
-            tmp = entry.get(self._raw_val)
-            val = tmp if tmp is not None else self._val
+
+            _ = entry.get(self._raw_val)
+            val = _ if _ is not None else self._val
             entry = entry.get(self._prm)
-        if isinstance(entry, dict):
+            val = entry.get(self._raw_val) or self._val
+            
             key = (
                 self._command_dict[self._cmd][self._prm].get(const.COMMAND_NAME) or key
             )
-            val = entry.get(self._raw_val) or self._val
+        except (KeyError, AttributeError):
+            pass
         return {key: val}
 
     def separate(self, msg) -> tuple:
