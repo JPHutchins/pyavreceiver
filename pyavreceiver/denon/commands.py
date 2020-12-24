@@ -1,9 +1,9 @@
 """Define Denon/Marantz commands."""
-from pyavreceiver.error import AVReceiverInvalidArgumentError
+import pyavreceiver.denon.const as denon_const
 from pyavreceiver import const
 from pyavreceiver.command import TelnetCommand
 from pyavreceiver.denon.parse import parse
-import pyavreceiver.denon.const as denon_const
+from pyavreceiver.error import AVReceiverInvalidArgumentError
 
 
 class DenonTelnetCommand(TelnetCommand):

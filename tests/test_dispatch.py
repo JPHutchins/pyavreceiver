@@ -1,7 +1,7 @@
 """Define tests for the Dispatch module."""
-
 import asyncio
 import functools
+
 import pytest
 
 from pyavreceiver.dispatch import Dispatcher

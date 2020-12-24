@@ -5,9 +5,8 @@ import aiofiles
 import yaml
 
 from pyavreceiver import const
-from pyavreceiver.telnet_connection import TelnetConnection
-
 from pyavreceiver.denon.commands import get_command_lookup
+from pyavreceiver.telnet_connection import TelnetConnection
 
 
 class GenericTelnetConnection(TelnetConnection):

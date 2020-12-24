@@ -1,10 +1,11 @@
 """Define persistent connection to an AV Receiver."""
-from abc import ABC, abstractmethod
 import asyncio
-from collections import defaultdict, OrderedDict, deque
-from datetime import datetime, timedelta
 import logging
+from abc import ABC, abstractmethod
+from collections import OrderedDict, defaultdict, deque
+from datetime import datetime, timedelta
 from typing import Optional
+
 import telnetlib3
 
 from pyavreceiver import const

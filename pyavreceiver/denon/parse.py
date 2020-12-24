@@ -1,5 +1,6 @@
 """Define helpers for parsing integer values returned by receiver."""
 import math
+
 from pyavreceiver.denon.error import DenonCannotParse
 
 

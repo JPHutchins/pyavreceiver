@@ -1,9 +1,10 @@
 """Tests for the TelnetConnection class."""
 import asyncio
+
 import pytest
+
 from pyavreceiver import const
 from pyavreceiver.dispatch import Dispatcher
-
 from tests import GenericTelnetConnection
 
 

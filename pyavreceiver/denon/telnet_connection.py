@@ -1,10 +1,10 @@
 """Define the Denon/Marantz telnet connection."""
 import logging
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
 import aiofiles
 import yaml
-
 
 from pyavreceiver.denon import const as denon_const
 from pyavreceiver.denon.commands import get_command_lookup

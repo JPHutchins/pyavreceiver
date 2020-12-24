@@ -1,5 +1,6 @@
 """Test fixtures for pyheos."""
 import asyncio
+
 import pytest
 import telnetlib3
 

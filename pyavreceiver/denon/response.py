@@ -1,12 +1,10 @@
 """Implement a Denon telnet message."""
-
 import logging
-from pyavreceiver.denon.error import DenonCannotParse
 
-from pyavreceiver.response import Message
-from pyavreceiver.denon.parse import parse
 from pyavreceiver import const
-
+from pyavreceiver.denon.error import DenonCannotParse
+from pyavreceiver.denon.parse import parse
+from pyavreceiver.response import Message
 
 _LOGGER = logging.getLogger(__name__)
 

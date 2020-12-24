@@ -1,8 +1,7 @@
 """Defines the dispatch component for notifying others of signals."""
-
 import asyncio
-from collections import defaultdict
 import functools
+from collections import defaultdict
 from typing import Any, Callable, Dict, List, Sequence
 
 TargetType = Callable[..., Any]

@@ -1,6 +1,6 @@
 """Define Denon/Marantz A/V Receiver Zones."""
-from pyavreceiver.zone import Zone
 from pyavreceiver.denon import const as denon_const
+from pyavreceiver.zone import Zone
 
 
 class DenonZone(Zone):

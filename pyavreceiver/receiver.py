@@ -1,10 +1,11 @@
 """Define an audio/video receiver."""
 from collections import defaultdict
 from typing import Optional
-from pyavreceiver.zone import Zone
+
 from pyavreceiver import const
 from pyavreceiver.dispatch import Dispatcher
 from pyavreceiver.telnet_connection import TelnetConnection
+from pyavreceiver.zone import Zone
 
 
 class AVReceiver:

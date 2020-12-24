@@ -1,7 +1,7 @@
 """Test the DenonReceiver class."""
-from pyavreceiver.dispatch import Dispatcher
 from pyavreceiver import const
 from pyavreceiver.denon.receiver import DenonReceiver
+from pyavreceiver.dispatch import Dispatcher
 
 
 def test_receiver_init():

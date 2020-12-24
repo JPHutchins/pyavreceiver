@@ -1,11 +1,11 @@
 """Define a Denon/Marantz Audio Video Receiver."""
 from typing import Optional
 
-from pyavreceiver.receiver import AVReceiver
-from pyavreceiver.dispatch import Dispatcher
+from pyavreceiver.denon import const as denon_const
 from pyavreceiver.denon.telnet_connection import DenonTelnetConnection
 from pyavreceiver.denon.zone import DenonZone
-from pyavreceiver.denon import const as denon_const
+from pyavreceiver.dispatch import Dispatcher
+from pyavreceiver.receiver import AVReceiver
 
 
 class DenonReceiver(AVReceiver):

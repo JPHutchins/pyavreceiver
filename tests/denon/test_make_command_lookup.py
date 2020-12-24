@@ -2,10 +2,10 @@
 import pytest
 
 from pyavreceiver import const
-from pyavreceiver.error import AVReceiverInvalidArgumentError
 from pyavreceiver.denon.commands import get_command_lookup
 from pyavreceiver.denon.error import DenonCannotParse
 from pyavreceiver.denon.parse import parse
+from pyavreceiver.error import AVReceiverInvalidArgumentError
 
 
 def test_parse():
