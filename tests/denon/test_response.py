@@ -63,6 +63,14 @@ def test_separate(message_none):
     assert message_none.separate("MV595") == ("MV", None, "595")
 
     assert message_none.separate("Z2PSBAS 51") == ("Z2PS", "BAS", "51")
+    assert message_none.separate("Z260") == ("Z2", None, "60")
+    assert message_none.separate("Z2ON") == ("Z2", None, "ON")
+    assert message_none.separate("Z2PHONO") == ("Z2", None, "PHONO")
+
+    assert message_none.separate("Z3PSBAS 51") == ("Z3PS", "BAS", "51")
+    assert message_none.separate("Z360") == ("Z3", None, "60")
+    assert message_none.separate("Z3ON") == ("Z3", None, "ON")
+    assert message_none.separate("Z3PHONO") == ("Z3", None, "PHONO")
 
     assert message_none.separate("NEWCMD 50") == ("NEWCMD", None, "50")
     assert message_none.separate("NEWCMD WITH PARAMS 50") == (
@@ -212,6 +220,29 @@ def test_multiple_types(command_dict):
 def test_unnamed_param(command_dict):
     """Test an unnamed parsed parameter."""
     assert DenonMessage("PSDELAY 000", command_dict).state_update == {"PS_DELAY": "000"}
+
+
+def test_zones(command_dict):
+    """Test parsing zone commands."""
+    assert DenonMessage("ZMON", command_dict).state_update == {"zone1_power": True}
+    assert DenonMessage("ZMOFF", command_dict).state_update == {"zone1_power": False}
+
+    assert DenonMessage("Z2PSBAS 51", command_dict).state_update == {"zone2_bass": 1}
+    assert DenonMessage("Z3PSTRE 445", command_dict).state_update == {
+        "zone3_treble": -5.5
+    }
+
+    assert DenonMessage("Z260", command_dict).state_update == {"zone2_volume": -20}
+    assert DenonMessage("Z2ON", command_dict).state_update == {"zone2_power": True}
+    assert DenonMessage("Z2PHONO", command_dict).state_update == {
+        "zone2_source": "PHONO"
+    }
+
+    assert DenonMessage("Z360", command_dict).state_update == {"zone3_volume": -20}
+    assert DenonMessage("Z3OFF", command_dict).state_update == {"zone3_power": False}
+    assert DenonMessage("Z3SOURCE", command_dict).state_update == {
+        "zone3_source": "SOURCE"
+    }
 
 
 def test_sequence(command_dict):

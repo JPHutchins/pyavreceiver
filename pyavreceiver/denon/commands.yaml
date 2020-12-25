@@ -2,10 +2,6 @@ PW:
   ^name: power
   "ON": true
   STANDBY: false
-ZM:
-  ^name: zone_1_power
-  "ON": true
-  STANDBY: false
 MV: # Volume like 40 405 41 415 ^etc:
   ^params: true
   ^name: volume
@@ -88,6 +84,10 @@ SI:
   IPOD DIRECT:
   USB:
   IPD:
+ZM:
+  ^name: "zone1_power"
+  "ON": true
+  "OFF": false
 SD:
   AUTO:
   HDMI:
@@ -223,7 +223,7 @@ PS:
     "ON": "On"
     "OFF": "Off"
   "MODE:":
-    ^name: dsp_mode
+    ^name: dsp_category
     CINEMA:
     MUSIC:
     GAME:
@@ -380,22 +380,52 @@ PV:
   DNR MID:
   DNR HI:
 Z2:
-  ^name: zone_2
+  ^names: 
+    number: zone2_volume
+    "ON": zone2_power
+    "OFF": zone2_power
+    other: zone2_source
   ^range:
     - 00
     - 99
   ^function: volume
   ^zero: 80
-  PHONO:
   SOURCE:
+  PHONO:
+  CD:
+  TUNER:
+  DVD:
+  BD: blu-ray
+  TV:
+  SAT/CBL:
+  DVR:
+  GAME:
+  GAME2:
+  V.AUX:
+  DOCK:
+  HDRADIO:
+  IPOD:
+  RHAPSODY:
+  NAPSTER:
+  PANDORA:
+  LASTFM:
+  FLICKR:
+  FAVORITES:
+  IRADIO:
+  SERVER:
+  USB DIRECT:
+  IPOD DIRECT:
+  USB:
+  IPD:
   QUICK1:
   QUICK2:
   QUICK3:
   QUICK4:
   QUICK5:
-  "ON":
-  "OFF":
+  "ON": true
+  "OFF": false
 Z2MU:
+  ^name: zone2_mute
   "ON":
   "OFF":
 Z2CS:
@@ -412,21 +442,72 @@ Z2CV:
       - 38
       - 62
 Z2HPF:
-  "ON": "On"
-  "OFF": "Off"
+  "ON": true
+  "OFF": false
 Z2PS:
   ^params: true
   BAS:
+    ^name: "zone2_bass"
     ^range:
       - 44
       - 56
+    ^function: volume
+    ^zero: 50
   TRE:
+    ^name: "zone2_treble"
     ^range:
       - 44
       - 56
+    ^function: volume
+    ^zero: 50
+Z3:
+  ^names: 
+    number: zone3_volume
+    "ON": zone3_power
+    "OFF": zone3_power
+    other: zone3_source
+  ^range:
+    - 00
+    - 99
+  ^function: volume
+  ^zero: 80
+  SOURCE:
+  PHONO:
+  CD:
+  TUNER:
+  DVD:
+  BD: blu-ray
+  TV:
+  SAT/CBL:
+  DVR:
+  GAME:
+  GAME2:
+  V.AUX:
+  DOCK:
+  HDRADIO:
+  IPOD:
+  RHAPSODY:
+  NAPSTER:
+  PANDORA:
+  LASTFM:
+  FLICKR:
+  FAVORITES:
+  IRADIO:
+  SERVER:
+  USB DIRECT:
+  IPOD DIRECT:
+  USB:
+  IPD:
+  QUICK1:
+  QUICK2:
+  QUICK3:
+  QUICK4:
+  QUICK5:
+  "ON": true
+  "OFF": false
 Z3MU:
-  "ON": "On"
-  "OFF": "Off"
+  "ON": true
+  "OFF": false
 Z3CS:
   ST:
   MONO:
@@ -440,14 +521,21 @@ Z3CV:
       - 38
       - 62
 Z3HPF:
-  "ON": "On"
-  "OFF": "Off"
+  "ON": true
+  "OFF": false
 Z3PS:
+  ^params: true
   BAS:
+    ^name: "zone3_bass"
     ^range:
       - 44
       - 56
+    ^function: volume
+    ^zero: 50
   TRE:
+    ^name: "zone3_treble"
     ^range:
       - 44
       - 56
+    ^function: volume
+    ^zero: 50

@@ -22,16 +22,10 @@ def denon_command_dict():
         command_dict.update(fake_entries)
     return command_dict
 
+
 fake_entries = {
     "FAKEFORTEST": {},
-    "FAKE": {
-        "FOR TESTS": {}
-    },
-    "FAKEFO": {
-        "R T E STS": {}
-    },
-    "FAKEN": {
-        "^params": True,
-        "OR": "TEST"
-    }
+    "FAKE": {"FOR TESTS": {}},
+    "FAKEFO": {"R T E STS": {}},
+    "FAKEN": {"^params": True, "OR": "TEST"},
 }

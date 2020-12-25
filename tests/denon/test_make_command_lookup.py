@@ -158,5 +158,8 @@ def test_generate_commands(command_dict):
     assert command_lookup[const.ATTR_LFE_LEVEL].set_val(0).message == "PSLFE 0\r"
     assert command_lookup[const.ATTR_LFE_LEVEL].set_val(-7).message == "PSLFE -7\r"
 
+    assert command_lookup[const.ATTR_ZONE1_POWER].set_val(True).message == "ZMON\r"
+    assert command_lookup[const.ATTR_ZONE1_POWER].set_val(False).message == "ZMOFF\r"
+
     # check that this works - won't be supported:
     assert command_lookup["Z3CS"].set_val("st").message == "Z3CSST\r"

@@ -46,24 +46,39 @@ class DenonMessage(Message):
         key = entry
         val = self._val if self._val is not None else self._raw_val
         try:
+            if const.COMMAND_NAMES in entry:
+                try:
+                    _ = int(val)
+                    val_type = "number"
+                except ValueError:
+                    val_type = val
+                key = entry[const.COMMAND_NAMES].get(val_type)
+                if key is None:
+                    key = entry[const.COMMAND_NAMES]["other"]
+
             if const.COMMAND_NAME in entry and const.COMMAND_PARAMS in entry:
                 cmd_name = entry[const.COMMAND_NAME]
                 key = f"{cmd_name}_{self._prm.lower()}" if self._prm else cmd_name
                 entry = entry.get(self._prm)
-            key = (
-                entry.get(const.COMMAND_NAME)
-                or key.get(const.COMMAND_NAME)
-                or f"{self._cmd}_{self._prm or ''}"
-            )
+
+            try:
+                key = (
+                    entry.get(const.COMMAND_NAME)
+                    or key.get(const.COMMAND_NAME)  # key may be string
+                    or f"{self._cmd}_{self._prm or ''}"
+                )
+            except AttributeError:
+                pass
 
             _ = entry.get(self._raw_val)
-            val = _ if _ is not None else self._val
+            val = _ if _ is not None else self._val or val
             entry = entry.get(self._prm)
-            val = entry.get(self._raw_val) or self._val
+            val = entry.get(self._raw_val) or self._val or val
 
             key = (
                 self._command_dict[self._cmd][self._prm].get(const.COMMAND_NAME) or key
             )
+
         except (KeyError, AttributeError):
             pass
         return {key: val}
@@ -138,7 +153,7 @@ class DenonMessage(Message):
             parser = parse[const.FUNCTION_NUM_TO_DB]
             return parser(
                 num=val,
-                zero=entry[const.COMMAND_ZERO],
+                zero=entry.get(const.COMMAND_ZERO),
                 strings=entry.get(const.COMMAND_STRINGS),
             )
         raise Exception

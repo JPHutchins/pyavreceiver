@@ -16,6 +16,7 @@ STATE_RECONNECTING = "reconnecting"
 
 # Using ^ as escape character
 COMMAND_NAME = "^name"
+COMMAND_NAMES = "^names"
 COMMAND_PARAMS = "^params"
 COMMAND_RANGE = "^range"
 COMMAND_FUNCTION = "^function"
@@ -47,7 +48,7 @@ ATTR_DIALOG_LEVEL = "dialog_level"
 ATTR_DSP_DRC = "dsp_dynamic_range_control"
 ATTR_DSP_MODE = "dsp_mode"
 ATTR_META_DRC = "meta_dynamic_range_control"
-ATTR_ZONE_1_POWER = "zone_1_power"
+ATTR_ZONE1_POWER = "zone1_power"
 
 VAL_DOWN = "down"
 VAL_UP = "up"

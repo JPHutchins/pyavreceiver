@@ -115,11 +115,11 @@ class MainZone(Zone):
     @property
     def power(self) -> str:
         """The state of zone power."""
-        return self.get(const.ATTR_ZONE_1_POWER)
+        return self.get(const.ATTR_ZONE1_POWER)
 
     def set_power(self, val: bool) -> bool:
         """Request the receiver set zone power to val."""
-        return self.set(const.ATTR_ZONE_1_POWER, val)
+        return self.set(const.ATTR_ZONE1_POWER, val)
 
     @property
     def soundmode(self) -> str:
