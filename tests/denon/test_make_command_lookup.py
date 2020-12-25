@@ -163,3 +163,27 @@ def test_generate_commands(command_dict):
 
     # check that this works - won't be supported:
     assert command_lookup["Z3CS"].set_val("st").message == "Z3CSST\r"
+
+
+def test_generate_zone_commands(command_dict):
+    """Test creation of zone2, zone3, etc. command messages."""
+    command_lookup = get_command_lookup(command_dict)
+
+    assert command_lookup[const.ATTR_ZONE2_POWER].set_val(True).message == "Z2ON\r"
+    assert command_lookup[const.ATTR_ZONE3_POWER].set_val(False).message == "Z3OFF\r"
+
+    assert (
+        command_lookup[const.ATTR_ZONE2_SOURCE].set_val("PHONO").message == "Z2PHONO\r"
+    )
+    assert command_lookup[const.ATTR_ZONE3_SOURCE].set_val("TV").message == "Z3TV\r"
+
+    assert command_lookup[const.ATTR_ZONE2_VOLUME].set_val(-10).message == "Z270\r"
+    assert command_lookup[const.ATTR_ZONE3_VOLUME].set_val(-0.5).message == "Z3795\r"
+
+    assert command_lookup[const.ATTR_ZONE2_VOLUME_UP].set_val().message == "Z2UP\r"
+    assert command_lookup[const.ATTR_ZONE3_VOLUME_DOWN].set_val().message == "Z3DOWN\r"
+
+    assert (
+        command_lookup[const.ATTR_ZONE2_TREBLE].set_val(-4.5).message == "Z2PSTRE 455\r"
+    )
+    assert command_lookup[const.ATTR_ZONE3_BASS].set_val(1.5).message == "Z3PSBAS 515\r"

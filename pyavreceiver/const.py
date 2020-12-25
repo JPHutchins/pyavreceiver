@@ -50,6 +50,22 @@ ATTR_DSP_MODE = "dsp_mode"
 ATTR_META_DRC = "meta_dynamic_range_control"
 ATTR_ZONE1_POWER = "zone1_power"
 
+ATTR_ZONE2_POWER = "zone2_power"
+ATTR_ZONE2_VOLUME = "zone2_volume"
+ATTR_ZONE2_VOLUME_UP = "zone2_volume_up"
+ATTR_ZONE2_VOLUME_DOWN = "zone2_volume_down"
+ATTR_ZONE2_BASS = "zone2_bass"
+ATTR_ZONE2_TREBLE = "zone2_treble"
+ATTR_ZONE2_SOURCE = "zone2_source"
+
+ATTR_ZONE3_POWER = "zone3_power"
+ATTR_ZONE3_VOLUME = "zone3_volume"
+ATTR_ZONE3_VOLUME_UP = "zone3_volume_up"
+ATTR_ZONE3_VOLUME_DOWN = "zone3_volume_down"
+ATTR_ZONE3_BASS = "zone3_bass"
+ATTR_ZONE3_TREBLE = "zone3_treble"
+ATTR_ZONE3_SOURCE = "zone3_source"
+
 VAL_DOWN = "down"
 VAL_UP = "up"
 

@@ -424,6 +424,10 @@ Z2:
   QUICK5:
   "ON": true
   "OFF": false
+Z2UP:
+  ^name: zone2_volume_up
+Z2DOWN:
+  ^name: zone2_volume_down
 Z2MU:
   ^name: zone2_mute
   "ON":
@@ -505,6 +509,10 @@ Z3:
   QUICK5:
   "ON": true
   "OFF": false
+Z3UP:
+  ^name: zone3_volume_up
+Z3DOWN:
+  ^name: zone3_volume_down
 Z3MU:
   "ON": true
   "OFF": false

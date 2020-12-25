@@ -152,20 +152,23 @@ def get_command_lookup(command_dict):
             # No nested params, make entry and continue loop
             val_pfx = ""
             if const.COMMAND_NAME in entry:
-                name = entry[const.COMMAND_NAME]
+                names = [entry[const.COMMAND_NAME]]
+            elif const.COMMAND_NAMES in entry:
+                names = entry[const.COMMAND_NAMES].values()
             else:
-                name = cmd
-            add_command(
-                command_lookup,
-                entry,
-                name,
-                cmd,
-                val_pfx,
-                val_range,
-                zero,
-                func,
-                strings,
-            )
+                names = [cmd]
+            for name in names:
+                add_command(
+                    command_lookup,
+                    entry,
+                    name,
+                    cmd,
+                    val_pfx,
+                    val_range,
+                    zero,
+                    func,
+                    strings,
+                )
             continue
 
         if const.COMMAND_PARAMS in entry and const.COMMAND_NAME in entry:
