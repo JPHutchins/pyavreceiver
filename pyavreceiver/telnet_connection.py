@@ -122,7 +122,6 @@ class TelnetConnection(ABC):
 
     async def _disconnect(self):
         """Cancel response handler and pending tasks."""
-        print("disconnect")
         if self._heart_beat_task:
             self._heart_beat_task.cancel()
             try:

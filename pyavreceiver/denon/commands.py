@@ -194,7 +194,6 @@ def get_command_lookup(command_dict):
                 # prm is not a command
                 continue
             try:
-                print(prm)
                 sub_val_range = sub_entry.get(const.COMMAND_RANGE)
                 sub_range_zero = sub_entry.get(const.COMMAND_ZERO)
                 sub_func = sub_entry.get(const.COMMAND_FUNCTION)
@@ -232,8 +231,6 @@ def get_command_lookup(command_dict):
 
 def add_command(ref, entry, name, cmd, val_pfx, val_range, zero, func, strings):
     """Add the command to the command dictionary, ref."""
-    if name == "channel_level_fl":
-        print("channel", entry, val_range)
     values = {}
     try:
         for item in entry:

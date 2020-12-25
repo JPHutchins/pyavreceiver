@@ -28,7 +28,7 @@ class Parse:
         except TypeError:
             return num
         except ValueError:
-            print(num, zero, strings)
+            return None
 
     @staticmethod
     def db_to_num(decibel: int = None, zero: int = 80, str_len: int = 0, strings=None):
