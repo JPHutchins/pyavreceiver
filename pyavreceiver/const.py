@@ -69,6 +69,18 @@ ATTR_ZONE3_SOURCE = "zone3_source"
 VAL_DOWN = "down"
 VAL_UP = "up"
 
+ZONE_PREFIX = {
+    "main": "",
+    "zone1": "",
+    "zone_1": "",
+    "zone2": "zone2_",
+    "zone_2": "zone2_",
+    "zone3": "zone3_",
+    "zone_3": "zone3_",
+    "zone4": "zone4_",
+    "zone_4": "zone4_",
+}
+
 FUNCTION_VOLUME = "volume"
 FUNCTION_NUM_TO_DB = "num_to_db"
 FUNCTION_DB_TO_NUM = "db_to_num"

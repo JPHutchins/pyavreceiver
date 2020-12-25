@@ -5,10 +5,10 @@ from pyavreceiver import const
 class Zone:
     """Define an Audio/Video Receiver zone."""
 
-    def __init__(self, avr, zone_prefix: str = ""):
+    def __init__(self, avr, zone: str = "main"):
         """Init the zone."""
         self._avr = avr
-        self._zone_prefix = zone_prefix
+        self._zone_prefix = const.ZONE_PREFIX[zone.lower()]
         self._commands = avr._connection._command_lookup  # type: dict
 
     def get(self, name: str) -> str:
@@ -40,15 +40,6 @@ class Zone:
         """The dictionary of available commands."""
         return self._commands
 
-
-class MainZone(Zone):
-    """Define an Audio/Video Receiver main zone.
-
-    This class represents the attributes of AVR Main Zones.
-    Attributes are ordered alphabetically.  Setters are prefixed with set_ and grouped with
-    their corresponding property.
-    """
-
     @property
     def bass(self) -> int:
         """The state of bass."""
@@ -57,6 +48,67 @@ class MainZone(Zone):
     def set_bass(self, val: float) -> bool:
         """Request the receiver set the bass to val."""
         return self.set(const.ATTR_BASS, val)
+
+    @property
+    def mute(self) -> str:
+        """The state of mute."""
+        return self.get(const.ATTR_MUTE)
+
+    def set_mute(self, val: bool) -> bool:
+        """Request the receiver set mute to val."""
+        return self.set(const.ATTR_MUTE, val)
+
+    @property
+    def power(self) -> str:
+        """The state of zone power."""
+        return self.get(const.ATTR_ZONE1_POWER)
+
+    def set_power(self, val: bool) -> bool:
+        """Request the receiver set zone power to val."""
+        return self.set(const.ATTR_ZONE1_POWER, val)
+
+    @property
+    def source(self) -> str:
+        """The state of source."""
+        return self.get(const.ATTR_SOURCE)
+
+    def set_source(self, val: str) -> bool:
+        """Request the receiver set the source to val."""
+        return self.set(const.ATTR_SOURCE, val)
+
+    @property
+    def treble(self) -> int:
+        """The state of treble."""
+        return self.get(const.ATTR_TREBLE)
+
+    def set_treble(self, val: float) -> bool:
+        """Request the receiver set the treble to val."""
+        return self.set(const.ATTR_TREBLE, val)
+
+    @property
+    def volume(self) -> str:
+        """The state of volume."""
+        return self.get(const.ATTR_VOLUME)
+
+    def set_volume(self, val: float) -> bool:
+        """Request the receiver set volume to val."""
+        return self.set(const.ATTR_VOLUME, val)
+
+    def set_volume_down(self) -> bool:
+        """Request the receiver turn the volume down."""
+        return self.set(const.ATTR_VOLUME_DOWN)
+
+    def set_volume_up(self) -> bool:
+        """Request the receiver turn the volume up."""
+        return self.set(const.ATTR_VOLUME_UP)
+
+
+class MainZone(Zone):
+    """Define an Audio/Video Receiver main zone.
+
+    Attributes are ordered alphabetically.  Setters are prefixed with set_ and grouped with
+    their corresponding property.
+    """
 
     @property
     def dialog_level(self) -> str:
@@ -104,24 +156,6 @@ class MainZone(Zone):
         return self.set(const.ATTR_META_DRC, val)
 
     @property
-    def mute(self) -> str:
-        """The state of mute."""
-        return self.get(const.ATTR_MUTE)
-
-    def set_mute(self, val: bool) -> bool:
-        """Request the receiver set mute to val."""
-        return self.set(const.ATTR_MUTE, val)
-
-    @property
-    def power(self) -> str:
-        """The state of zone power."""
-        return self.get(const.ATTR_ZONE1_POWER)
-
-    def set_power(self, val: bool) -> bool:
-        """Request the receiver set zone power to val."""
-        return self.set(const.ATTR_ZONE1_POWER, val)
-
-    @property
     def soundmode(self) -> str:
         """The state of soundmode."""
         return self.get(const.ATTR_SOUND_MODE)
@@ -129,15 +163,6 @@ class MainZone(Zone):
     def set_soundmode(self, val: str) -> bool:
         """Request the receiver set the sound mode to val."""
         return self.set(const.ATTR_SOUND_MODE, val)
-
-    @property
-    def source(self) -> str:
-        """The state of source."""
-        return self.get(const.ATTR_SOURCE)
-
-    def set_source(self, val: str) -> bool:
-        """Request the receiver set the source to val."""
-        return self.set(const.ATTR_SOURCE, val)
 
     @property
     def subwoofer_one(self) -> bool:
@@ -156,29 +181,3 @@ class MainZone(Zone):
     def set_tone_control(self, val: bool) -> bool:
         """Request the receiver set the treble to val."""
         return self.set(const.ATTR_TONE_CONTROL, val)
-
-    @property
-    def treble(self) -> int:
-        """The state of treble."""
-        return self.get(const.ATTR_TREBLE)
-
-    def set_treble(self, val: float) -> bool:
-        """Request the receiver set the treble to val."""
-        return self.set(const.ATTR_TREBLE, val)
-
-    @property
-    def volume(self) -> str:
-        """The state of volume."""
-        return self.get(const.ATTR_VOLUME)
-
-    def set_volume(self, val: float) -> bool:
-        """Request the receiver set volume to val."""
-        return self.set(const.ATTR_VOLUME, val)
-
-    def set_volume_down(self) -> bool:
-        """Request the receiver turn the volume down."""
-        return self.set(const.ATTR_VOLUME_DOWN)
-
-    def set_volume_up(self) -> bool:
-        """Request the receiver turn the volume up."""
-        return self.set(const.ATTR_VOLUME_UP)
