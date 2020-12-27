@@ -12,28 +12,29 @@ _LOGGER = logging.getLogger(__name__)
 class DenonMessage(Message):
     """Define a Denon telnet message representation."""
 
-    def __init__(self, msg: str = None, command_dict: dict = None):
+    def __init__(self, message: str = None, command_dict: dict = None):
         """Init a new Denon message."""
-        self._msg = None  # type: str
+        self._message = None  # type: str
         self._raw_val = None  # type: str
         self._cmd = None  # type: str
         self._prm = None  # type: str
         self._val = None
+        self._name = None  # type: str
         self._command_dict = command_dict or {}
-        self._state_update = self._parse(msg) if msg else {}
+        self._state_update = self._parse(message) if message else {}
 
     def __str__(self):
         """Get user readable message."""
-        return self._msg
+        return self._message
 
     def __repr__(self):
         """Get readable message."""
-        return self._msg
+        return self._message
 
-    def _parse(self, msg: str) -> dict:
+    def _parse(self, message: str) -> dict:
         """Parse message, assign attributes, return a state update dict."""
-        self._msg = msg
-        self._cmd, self._prm, self._raw_val = self.separate(msg)
+        self._message = message
+        self._cmd, self._prm, self._raw_val = self.separate(message)
         try:
             self._val = self.parse_value(self._cmd, self._prm, self._raw_val)
         except DenonCannotParse:
@@ -81,11 +82,12 @@ class DenonMessage(Message):
 
         except (KeyError, AttributeError):
             pass
+        self._name = key
         return {key: val}
 
-    def separate(self, msg) -> tuple:
+    def separate(self, message) -> tuple:
         """Separate command category, parameter, and value."""
-        return DenonMessage._search(self._command_dict, 0, msg, ())
+        return DenonMessage._search(self._command_dict, 0, message, ())
 
     @staticmethod
     def _search(lvl: dict, depth: int, rem: str, cur: tuple) -> tuple:
@@ -154,7 +156,7 @@ class DenonMessage(Message):
             return parser(
                 num=val,
                 zero=entry.get(const.COMMAND_ZERO),
-                strings=entry.get(const.COMMAND_STRINGS),
+                valid_strings=entry.get(const.COMMAND_STRINGS),
             )
         raise Exception
 
@@ -165,7 +167,7 @@ class DenonMessage(Message):
 
     @property
     def message(self) -> str:
-        return self._msg
+        return self._message
 
     @property
     def raw_value(self) -> str:
@@ -177,5 +179,8 @@ class DenonMessage(Message):
 
     @property
     def command(self) -> str:
-        prm = self._prm or ""
-        return self._cmd + prm
+        return self._cmd + (self._prm or "")
+
+    @property
+    def name(self) -> str:
+        return self._name
