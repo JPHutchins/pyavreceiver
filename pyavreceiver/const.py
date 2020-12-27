@@ -24,8 +24,8 @@ COMMAND_STRINGS = "^strings"
 COMMAND_ZERO = "^zero"
 
 DEVICE_INFO_ENDPOINTS = [
-    ":80/goform/DeviceInfo.xml",  # Denon/Marantz
-    ":8080/goform/DeviceInfo.xml",  # Denon/Marantz
+    ":80/goform/Deviceinfo.xml",  # Denon/Marantz
+    ":8080/goform/Deviceinfo.xml",  # Denon/Marantz
     "/YamahaRemoteControl/ctrl?",  # Yamaha
 ]
 
