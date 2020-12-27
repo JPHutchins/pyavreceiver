@@ -66,7 +66,7 @@ class DenonMessage(Message):
                 key = (
                     entry.get(const.COMMAND_NAME)
                     or key.get(const.COMMAND_NAME)  # key may be string
-                    or f"{self._cmd}_{self._prm or ''}"
+                    or f"{self._cmd}{'_' + self._prm if self._prm else ''}"
                 )
             except AttributeError:
                 pass
