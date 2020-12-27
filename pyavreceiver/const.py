@@ -23,6 +23,12 @@ COMMAND_FUNCTION = "^function"
 COMMAND_STRINGS = "^strings"
 COMMAND_ZERO = "^zero"
 
+DEVICE_INFO_ENDPOINTS = [
+    ":80/goform/DeviceInfo.xml",  # Denon/Marantz
+    ":8080/goform/DeviceInfo.xml",  # Denon/Marantz
+    "/YamahaRemoteControl/ctrl?",  # Yamaha
+]
+
 EVENT_TELNET = "telnet"
 EVENT_DISCONNECTED = "disconnected"
 EVENT_CONNECTED = "connected"
@@ -85,4 +91,14 @@ FUNCTION_VOLUME = "volume"
 FUNCTION_NUM_TO_DB = "num_to_db"
 FUNCTION_DB_TO_NUM = "db_to_num"
 
+INFO_MODEL = "model_name"
+INFO_MAC = "mac_address"
+INFO_ZONES = "zones"
+
 MESSAGE_INTERVAL_LIMIT = 50  # milliseconds
+
+UPNP_ENDPOINTS = {
+    "denon-avr": ":8080/description.xml",
+    "denon-avr-x": ":8080/description.xml",
+    "denon-avr-x-2016": ":60006/upnp/desc/aios_device/aios_device.xml",
+}
