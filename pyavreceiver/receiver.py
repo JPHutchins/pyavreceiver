@@ -17,6 +17,7 @@ class AVReceiver:
         *,
         telnet: bool = True,
         http: bool = True,
+        http_api=None,
         upnp: bool = True,
         timeout: float = const.DEFAULT_TIMEOUT,
         heart_beat: Optional[float] = const.DEFAULT_HEART_BEAT,
@@ -29,11 +30,16 @@ class AVReceiver:
         self._dispatcher = dispatcher
         self._telnet = telnet
         self._http = http
+        self._http_connection = http_api
         self._upnp = upnp
         self._connections = []
         self._state = defaultdict()
+        self._sources = None  # type: dict
         self._main_zone = None  # type: Zone
         self._zone = zone
+        self._model_name = None
+        self._mac_address = None
+        self._zones = None
 
     async def init(
         self,
@@ -42,6 +48,8 @@ class AVReceiver:
         reconnect_delay: float = const.DEFAULT_RECONNECT_DELAY
     ):
         """Await the initialization of the device."""
+        if self._http and self._http_connection:
+            await self.update_device_info()
         await self._connection.init(
             auto_reconnect=auto_reconnect, reconnect_delay=reconnect_delay
         )
@@ -74,6 +82,16 @@ class AVReceiver:
                 self._state[attr] = val
                 update = True
         return update
+
+    async def update_device_info(self):
+        """Update information about the A/V Receiver."""
+        info = await self._http_connection.get_device_info()
+        self._model_name = info.get(const.INFO_MODEL)
+        self._mac_address = info.get(const.INFO_MAC)
+        self._zones = info.get(const.INFO_ZONES)
+
+        sources = await self._http_connection.get_source_names()
+        self._sources = sources
 
     @property
     def dispatcher(self) -> Dispatcher:
