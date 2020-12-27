@@ -1,4 +1,5 @@
 """Define an HTTP connection to a Denon/Marantz receiver."""
+import asyncio
 from xml.etree import ElementTree as ET
 
 import aiohttp
@@ -24,7 +25,7 @@ class DenonHTTPApi(HTTPConnection):
     async def _get_device_info(self):
         """Get information about the device."""
         async with aiohttp.ClientSession() as session:
-            async with session.get(
+            async with session.post(
                 f"http://{self.host}:{self.port}{self._device_info_url}"
             ) as resp:
                 text = await resp.text()
@@ -33,7 +34,7 @@ class DenonHTTPApi(HTTPConnection):
     async def _app_command(self, xml: bytes):
         """Make request to AppCommand.xml endpoint."""
         async with aiohttp.ClientSession() as session:
-            async with session.get(
+            async with session.post(
                 f"http://{self.host}:{self.port}/goform/AppCommand.xml", data=xml
             ) as resp:
                 text = await resp.text()
