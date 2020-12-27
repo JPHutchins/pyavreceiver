@@ -11,7 +11,7 @@ from pyavreceiver.denon.commands import get_command_lookup
 from pyavreceiver.denon.response import DenonMessage
 from pyavreceiver.telnet_connection import TelnetConnection
 
-_LOGGER = logging.getLogger("denon_telnet_cconnection")
+_LOGGER = logging.getLogger(__name__)
 
 
 class DenonTelnetConnection(TelnetConnection):
@@ -59,3 +59,4 @@ class DenonTelnetConnection(TelnetConnection):
                 # TODO: error handling
                 _LOGGER.critical(err)
                 _LOGGER.critical(msg)
+                raise err
