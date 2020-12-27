@@ -1,37 +1,14 @@
 """Define Denon/Marantz commands."""
+from collections import defaultdict
+
 import pyavreceiver.denon.const as denon_const
 from pyavreceiver import const
-from pyavreceiver.command import TelnetCommand
+from pyavreceiver.command import CommandValues, TelnetCommand, identity
 from pyavreceiver.denon.parse import parse
-from pyavreceiver.error import AVReceiverInvalidArgumentError
 
 
 class DenonTelnetCommand(TelnetCommand):
     """Representation of a Denon telnet message command."""
-
-    def __init__(
-        self,
-        name: str,
-        command: str,
-        values: list,
-        val_pfx: str,
-        func,
-        zero: int,
-        val=None,
-        message: str = None,
-        strings=None,
-    ):
-        self._name = name
-        self._command = command
-        self._values = values
-        self._val_pfx = val_pfx
-        self._func = func or identity
-        self._zero = zero
-        self._val = val
-        self._strings = strings
-
-        self._val_translate = {"True": "ON", "False": "OFF"}
-        self._message = message
 
     def set_val(self, val=None) -> str:
         """Format the command with argument and return."""
@@ -43,21 +20,21 @@ class DenonTelnetCommand(TelnetCommand):
             except AttributeError:
                 pass
             message = (
-                f"{self._command}{self._val_pfx}{self._func(val, zero=self._zero, strings=self._strings)}"
+                f"{self._command}{self._val_pfx}{self._func(val, zero=self._zero, valid_strings=self._valid_strings)}"
                 f"{denon_const.TELNET_SEPARATOR}"
             )
         else:
             message = f"{self._command}{denon_const.TELNET_SEPARATOR}"
         return DenonTelnetCommand(
-            self._name,
-            self._command,
-            self._values,
-            self._val_pfx,
-            self._func,
-            self._zero,
-            val,
-            message,
-            self._strings,
+            name=self._name,
+            command=self._command,
+            values=self._values,
+            val_pfx=self._val_pfx,
+            func=self._func,
+            zero=self._zero,
+            val=val,
+            message=message,
+            valid_strings=self._valid_strings,
         )
 
     def set_query(self) -> str:
@@ -67,15 +44,15 @@ class DenonTelnetCommand(TelnetCommand):
             f"{denon_const.TELNET_SEPARATOR}"
         )
         return DenonTelnetCommand(
-            self._name,
-            self._command,
-            self._values,
-            self._val_pfx,
-            self._func,
-            self._zero,
-            denon_const.TELNET_QUERY,
-            message,
-            self._strings,
+            name=self._name,
+            command=self._command,
+            values=self._values,
+            val_pfx=self._val_pfx,
+            func=self._func,
+            zero=self._zero,
+            val=denon_const.TELNET_QUERY,
+            message=message,
+            valid_strings=self._valid_strings,
         )
 
     @property
@@ -106,47 +83,18 @@ class DenonTelnetCommand(TelnetCommand):
         return self._values
 
 
-class CommandValues:
-    """Possible values for a command."""
-
-    def __init__(self, values: dict):
-        self._values = values
-        self._values["min"] = self._values.get("min")
-        self._values["max"] = self._values.get("max")
-
-    def __repr__(self):
-        return str(self._values)
-
-    def __str__(self):
-        return str({x for x in self._values if self._values[x] is not None})
-
-    def get(self, name):
-        """Patch to dict.get()."""
-        return self._values.get(name)
-
-    def __getattr__(self, name: str) -> str:
-        if name in self._values:
-            return self._values[name]
-        raise AVReceiverInvalidArgumentError
-
-    def __getitem__(self, name: str) -> str:
-        if name in self._values:
-            return self._values[name]
-        raise AVReceiverInvalidArgumentError
-
-
 def get_command_lookup(command_dict):
     """Return the command lookup dict."""
-    command_lookup = {}
+    command_lookup = defaultdict(None)
     for cmd, entry in command_dict.items():
         try:
             val_range = entry.get(const.COMMAND_RANGE)
             zero = entry.get(const.COMMAND_ZERO)
             func = entry.get(const.COMMAND_FUNCTION)
             func = parse["num_to_db"] if func == const.FUNCTION_VOLUME else None
-            strings = entry.get(const.COMMAND_STRINGS)
+            valid_strings = entry.get(const.COMMAND_STRINGS)
         except AttributeError:
-            val_range, zero, func, strings = None, None, None, None
+            val_range, zero, func, valid_strings = None, None, None, None
 
         if const.COMMAND_PARAMS not in entry:
             # No nested params, make entry and continue loop
@@ -167,7 +115,7 @@ def get_command_lookup(command_dict):
                     val_range,
                     zero,
                     func,
-                    strings,
+                    valid_strings,
                 )
             continue
 
@@ -187,7 +135,7 @@ def get_command_lookup(command_dict):
                 val_range,
                 zero,
                 func,
-                strings,
+                valid_strings,
             )
 
         # Nested params, iterate and make entries
@@ -203,9 +151,9 @@ def get_command_lookup(command_dict):
                 sub_func = (
                     parse["num_to_db"] if sub_func == const.FUNCTION_VOLUME else func
                 )
-                sub_strings = sub_entry.get(const.COMMAND_STRINGS)
+                sub_valid_strings = sub_entry.get(const.COMMAND_STRINGS)
             except AttributeError:
-                sub_val_range, sub_range_zero, sub_func, sub_strings = (
+                sub_val_range, sub_range_zero, sub_func, sub_valid_strings = (
                     None,
                     None,
                     None,
@@ -227,12 +175,12 @@ def get_command_lookup(command_dict):
                 sub_val_range or val_range,
                 sub_range_zero or zero,
                 sub_func or func,
-                sub_strings or strings,
+                sub_valid_strings or valid_strings,
             )
     return command_lookup
 
 
-def add_command(ref, entry, name, cmd, val_pfx, val_range, zero, func, strings):
+def add_command(ref, entry, name, cmd, val_pfx, val_range, zero, func, valid_strings):
     """Add the command to the command dictionary, ref."""
     values = {}
     try:
@@ -260,11 +208,5 @@ def add_command(ref, entry, name, cmd, val_pfx, val_range, zero, func, strings):
         val_pfx=val_pfx,
         func=parse["db_to_num"] if func else None,
         zero=zero,
-        strings=strings,
+        valid_strings=valid_strings,
     )
-
-
-def identity(args, **kwargs):
-    """The identity function returns the input."""
-    # pylint: disable=unused-argument
-    return args
