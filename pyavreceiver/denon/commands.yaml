@@ -114,6 +114,8 @@ SLP:
 MS:
   ^name: sound_mode
   AUTO:
+  LEFT:
+  RIGHT:
   DIRECT:
   PURE DIRECT:
   STEREO:
