@@ -113,6 +113,7 @@ SLP:
   "OFF":
 MS:
   ^name: sound_mode
+  AUTO:
   DIRECT:
   PURE DIRECT:
   STEREO:
