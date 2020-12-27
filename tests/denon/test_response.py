@@ -263,7 +263,7 @@ def test_sequence(command_dict):
     ]
     for command in seq:
         DenonMessage(command, command_dict)
-    
+
     invalid_seq = [
         "90f9jf3^F*)UF(U(*#fjliuF(#)U(F@ujniljf(@#)&%T^GHkjbJBVKjY*(Y#*(@&5-00193ljl",
         "",
@@ -274,7 +274,7 @@ def test_sequence(command_dict):
         "None",
         "\r",
         "MV                                                   ",
-        "                 MV"
+        "                 MV",
     ]
     for command in invalid_seq:
         DenonMessage(command, command_dict)
