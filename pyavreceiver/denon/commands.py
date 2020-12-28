@@ -13,8 +13,9 @@ class DenonTelnetCommand(TelnetCommand):
     def set_val(self, val=None) -> str:
         """Format the command with argument and return."""
         if val is not None:
-            val = self._val_translate.get(str(val)) or val
-            val = self._values.get(str(val).lower()) or val
+            val = self._values.get(bool(val)) or self._values.get(str(val).lower()) or val
+            val = "ON" if val is True else val
+            val = "OFF" if val is False else val
             try:
                 val = val.upper()
             except AttributeError:
@@ -188,7 +189,14 @@ def add_command(ref, entry, name, cmd, val_pfx, val_range, zero, func, valid_str
             if str(item).startswith("^"):
                 continue
             if entry[item] is not None:
-                values[entry[item].lower()] = item
+                try:
+                    values[entry[item].lower()] = item
+                    if entry[item].lower() == "off":
+                        values[False] = item
+                    elif entry[item].lower() == "on":
+                        values[True] = item
+                except AttributeError:
+                    values[entry[item]] = item
             values[item.lower()] = item
     except (TypeError, AttributeError):
         pass

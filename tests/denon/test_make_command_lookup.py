@@ -112,7 +112,7 @@ def test_generate_commands(command_dict):
     with pytest.raises(Exception):
         _ = command_lookup[const.ATTR_POWER].message
     assert command_lookup[const.ATTR_POWER].set_val(True).message == "PWON\r"
-    assert command_lookup[const.ATTR_POWER].set_val(False).message == "PWOFF\r"
+    assert command_lookup[const.ATTR_POWER].set_val(False).message == "PWSTANDBY\r"
     assert command_lookup[const.ATTR_POWER].set_query().message == "PW?\r"
     assert command_lookup[const.ATTR_POWER].name == "power"
 
