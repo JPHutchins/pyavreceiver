@@ -23,7 +23,8 @@ class DenonTelnetCommand(TelnetCommand):
             except AttributeError:
                 pass
             message = (
-                f"{self._command}{self._val_pfx}{self._func(val, zero=self._zero, valid_strings=self._valid_strings)}"
+                f"{self._command}{self._val_pfx}"
+                f"{self._func(val, zero=self._zero, valid_strings=self._valid_strings)}"
                 f"{denon_const.TELNET_SEPARATOR}"
             )
         else:
