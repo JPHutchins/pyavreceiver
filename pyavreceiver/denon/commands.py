@@ -14,7 +14,10 @@ class DenonTelnetCommand(TelnetCommand):
         """Format the command with argument and return."""
         if val is not None:
             val = (
-                self._values.get(bool(val)) or self._values.get(str(val).lower()) or val
+                self._values.get(bool(val))
+                or self._values.get(val)
+                or self._values.get(str(val).lower())
+                or val
             )
             val = "ON" if val is True else val
             val = "OFF" if val is False else val
