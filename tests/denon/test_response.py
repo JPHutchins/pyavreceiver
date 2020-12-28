@@ -278,3 +278,36 @@ def test_sequence(command_dict):
     ]
     for command in invalid_seq:
         DenonMessage(command, command_dict)
+
+
+def test_learning_commands(command_dict):
+    """Test saving learned commands."""
+    assert DenonMessage("PWON", command_dict).new_command is None
+    assert DenonMessage("PWSCREENSAVER", command_dict).new_command == {
+        "cmd": "PW",
+        "prm": None,
+        "val": "SCREENSAVER",
+    }
+    assert DenonMessage("PSNEW", command_dict).new_command == {
+        "cmd": "PS",
+        "prm": "NEW",
+        "val": None,
+    }
+
+    # The parser matches param to "EFF" and then sees "ECT" as value
+    # - this is not ideal behavior - the parser should know that "ECT"
+    #   as an argument should be preceded by a space
+    assert DenonMessage("PSEFFECT", command_dict).parsed == ("PS", "EFF", "ECT")
+    assert DenonMessage("PSEFF ECT", command_dict).parsed == ("PS", "EFF", "ECT")
+
+    assert DenonMessage("CVATMOS RIGHT 52", command_dict).new_command == {
+        "cmd": "CV",
+        "prm": "ATMOS RIGHT",
+        "val": "52",
+    }
+    assert DenonMessage("NEWCMD MEDIUM", command_dict).new_command == {
+        "cmd": "NEWCMD",
+        "prm": None,
+        "val": "MEDIUM",
+    }
+    assert DenonMessage("UNPARSABLE", command_dict).new_command is None

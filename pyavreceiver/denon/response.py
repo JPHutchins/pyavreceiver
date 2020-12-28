@@ -21,6 +21,8 @@ class DenonMessage(Message):
         self._val = None
         self._name = None  # type: str
         self._command_dict = command_dict or {}
+        self._new_command = None
+
         self._state_update = self._parse(message) if message else {}
 
     def __str__(self):
@@ -87,11 +89,12 @@ class DenonMessage(Message):
 
     def separate(self, message) -> tuple:
         """Separate command category, parameter, and value."""
-        return DenonMessage._search(self._command_dict, 0, message, ())
+        return DenonMessage._search(self._command_dict, 0, message, (), self=self)
 
     @staticmethod
-    def _search(lvl: dict, depth: int, rem: str, cur: tuple) -> tuple:
+    def _search(lvl: dict, depth: int, rem: str, cur: tuple, self=None) -> tuple:
         """Search dict for best match."""
+        # pylint: disable=protected-access
         if rem in lvl:
             if depth == 1:
                 return (*cur, None, rem)
@@ -110,14 +113,19 @@ class DenonMessage(Message):
             words = rem.split(" ")
             if len(words) < 2:
                 _LOGGER.warning(
-                    "Added new event with empty value: %s, %s, None", *cur, prm
+                    "Added new event with empty value: %s, %s, None", *cur, rem
                 )
+                if self:
+                    self._new_command = {"cmd": cur[0], "prm": rem, "val": None}
                 return (*cur, words[0], None)
             prm = " ".join(words[:-1]).strip()
             val = words[-1].strip()
             _LOGGER.info("Added new event: %s, %s, %s", *cur, prm, val)
+            if self:
+                self._new_command = {"cmd": cur[0], "prm": prm, "val": val}
             return (*cur, prm, val)
         elif depth == 1:
+            self._new_command = {"cmd": cur[0], "prm": None, "val": rem.strip()}
             return (*cur, None, rem.strip())
         # Search for matches at every prefix/postfix
         for i in range(-1, -len(rem), -1):
@@ -125,10 +133,7 @@ class DenonMessage(Message):
             if prefix not in lvl:
                 continue
             return DenonMessage._search(
-                lvl[prefix],
-                depth + 1,
-                rem[i:],
-                (*cur, prefix),
+                lvl[prefix], depth + 1, rem[i:], (*cur, prefix), self=self
             )
         # No match found: return new entry, assume val after last space
         words = rem.split(" ")
@@ -138,6 +143,8 @@ class DenonMessage(Message):
         cmd = " ".join(words[:-1]).strip()
         val = words[-1].strip()
         _LOGGER.warning("Parsed new cmd event: %s, None, %s", cmd, val)
+        if self:
+            self._new_command = {"cmd": cmd, "prm": None, "val": val}
         return (cmd, None, val)
 
     def parse_value(self, cmd: str, prm: str, val: str):
@@ -180,6 +187,10 @@ class DenonMessage(Message):
     @property
     def command(self) -> str:
         return self._cmd + (self._prm or "")
+
+    @property
+    def new_command(self) -> dict:
+        return self._new_command
 
     @property
     def name(self) -> str:
