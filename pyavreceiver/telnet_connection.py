@@ -9,8 +9,6 @@ from typing import Optional
 import telnetlib3
 
 from pyavreceiver import const
-from pyavreceiver.command import CommandValues
-from pyavreceiver.denon.commands import DenonTelnetCommand
 from pyavreceiver.response import Message
 
 logging.basicConfig(level=logging.INFO)
@@ -36,6 +34,7 @@ class TelnetConnection(ABC):
         self.commands = None
         self._command_dict = {}
         self._command_lookup = {}
+        self._learned_commands = {}
         self.timeout = timeout  # type: int
         self._reader = None  # type: telnetlib3.TelnetReader
         self._writer = None  # type: telnetlib3.TelnetWriter
@@ -261,23 +260,6 @@ class TelnetConnection(ABC):
         if updated:
             self._avr.dispatcher.send(const.SIGNAL_STATE_UPDATE, resp.message)
         _LOGGER.debug("Event received: %s", resp.state_update)
-
-    def _learn_command(self, resp: Message):
-        """Learn the command."""
-        if resp.raw_value is None or resp.raw_value.isnumeric():
-            return
-        command = self._command_lookup[resp.name]
-        if command is not None:
-            if val := command.values.get(resp.raw_value.lower()):
-                command.values[val] = resp.raw_value
-        else:
-            command = DenonTelnetCommand(
-                name=resp.name,
-                command=resp.command,
-                values=CommandValues({resp.raw_value: resp.raw_value}),
-                val_pfx=" ",
-            )
-            self._command_lookup[resp.name] = command
 
     @property
     def state(self) -> str:
