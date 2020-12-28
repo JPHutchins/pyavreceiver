@@ -172,7 +172,7 @@ def test_state_update_dict(command_dict):
     assert DenonMessage("PSBAS 39", command_dict).state_update == {"bass": -11}
     assert DenonMessage("MUON", command_dict).state_update == {"mute": True}
     assert DenonMessage("SIPHONO", command_dict).state_update == {"source": "PHONO"}
-    assert DenonMessage("SIBD", command_dict).state_update == {"source": "blu-ray"}
+    assert DenonMessage("SIBD", command_dict).state_update == {"source": "BD"}
     assert DenonMessage("SINEW SOURCE TYPE", command_dict).state_update == {
         "source": "NEW SOURCE TYPE"
     }
