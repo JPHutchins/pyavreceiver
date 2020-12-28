@@ -112,7 +112,7 @@ class DenonMessage(Message):
             # No match found: return new entry, assume val after last space
             words = rem.split(" ")
             if len(words) < 2:
-                _LOGGER.warning(
+                _LOGGER.info(
                     "Added new event with empty value: %s, %s, None", *cur, rem
                 )
                 if self:
@@ -142,7 +142,7 @@ class DenonMessage(Message):
             return (rem, None, None)
         cmd = " ".join(words[:-1]).strip()
         val = words[-1].strip()
-        _LOGGER.warning("Parsed new cmd event: %s, None, %s", cmd, val)
+        _LOGGER.info("Parsed new cmd event: %s, None, %s", cmd, val)
         if self:
             self._new_command = {"cmd": cmd, "prm": None, "val": val}
         return (cmd, None, val)
