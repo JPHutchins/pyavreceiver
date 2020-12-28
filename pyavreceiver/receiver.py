@@ -3,6 +3,7 @@ from collections import defaultdict
 from typing import Optional
 
 from pyavreceiver import const
+from pyavreceiver.command import CommandValues
 from pyavreceiver.dispatch import Dispatcher
 from pyavreceiver.telnet_connection import TelnetConnection
 from pyavreceiver.zone import Zone
@@ -22,7 +23,8 @@ class AVReceiver:
         timeout: float = const.DEFAULT_TIMEOUT,
         heart_beat: Optional[float] = const.DEFAULT_HEART_BEAT,
         dispatcher: Dispatcher = Dispatcher(),
-        zone: Zone = Zone
+        main_zone: Zone = Zone,
+        aux_zone: Zone = Zone,
     ):
         """Init the device."""
         self._host = host
@@ -36,7 +38,8 @@ class AVReceiver:
         self._state = defaultdict()
         self._sources = None  # type: dict
         self._main_zone = None  # type: Zone
-        self._zone = zone
+        self._main_zone_class = main_zone
+        self._aux_zone_class = aux_zone
         self._model_name = None
         self._mac_address = None
         self._zones = None
@@ -45,7 +48,7 @@ class AVReceiver:
         self,
         *,
         auto_reconnect=False,
-        reconnect_delay: float = const.DEFAULT_RECONNECT_DELAY
+        reconnect_delay: float = const.DEFAULT_RECONNECT_DELAY,
     ):
         """Await the initialization of the device."""
         if self._http and self._http_connection:
@@ -53,13 +56,17 @@ class AVReceiver:
         await self._connection.init(
             auto_reconnect=auto_reconnect, reconnect_delay=reconnect_delay
         )
-        self._main_zone = self._zone(self)
+        self._main_zone = self._main_zone_class(self)
+        # pylint: disable=protected-access
+        self._connection._command_lookup[const.ATTR_SOURCE]._values = CommandValues(
+            self._sources
+        )
 
     async def connect(
         self,
         *,
         auto_reconnect=False,
-        reconnect_delay: float = const.DEFAULT_RECONNECT_DELAY
+        reconnect_delay: float = const.DEFAULT_RECONNECT_DELAY,
     ):
         """Connect to the audio/video receiver."""
         if self._telnet:
