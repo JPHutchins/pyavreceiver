@@ -26,6 +26,10 @@ class Message(ABC):
         """Return the command and parameter category."""
 
     @property
+    def new_command(self) -> dict:
+        """Return new command if it was parsed, else None."""
+
+    @property
     @abstractmethod
     def name(self) -> str:
         """Return the name. Maybe the same as command."""
