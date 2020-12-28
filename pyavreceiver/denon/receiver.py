@@ -6,6 +6,7 @@ from pyavreceiver.denon.telnet_connection import DenonTelnetConnection
 from pyavreceiver.denon.zone import DenonMainZone
 from pyavreceiver.dispatch import Dispatcher
 from pyavreceiver.receiver import AVReceiver
+from pyavreceiver.zone import Zone
 
 
 class DenonReceiver(AVReceiver):
@@ -22,7 +23,8 @@ class DenonReceiver(AVReceiver):
         timeout: float = denon_const.DEFAULT_TIMEOUT,
         heart_beat: Optional[float] = denon_const.DEFAULT_HEART_BEAT,
         dispatcher: Dispatcher = Dispatcher(),
-        zone: DenonMainZone = DenonMainZone
+        main_zone: DenonMainZone = DenonMainZone,
+        aux_zone: Zone = Zone
     ):
         super().__init__(
             host,
@@ -33,7 +35,8 @@ class DenonReceiver(AVReceiver):
             timeout=timeout,
             heart_beat=heart_beat,
             dispatcher=dispatcher,
-            zone=zone,
+            main_zone=main_zone,
+            aux_zone=aux_zone,
         )
         self._connection = DenonTelnetConnection(
             self,
