@@ -1,6 +1,7 @@
 language: python
 python:
   - '3.8'
+  - '3.9'
 jobs:
   fast_finish: true
   include:
@@ -11,5 +12,7 @@ jobs:
       after_success: coveralls
     - python: "3.8"
       env: TOXENV=py38
+    - python: "3.9"
+      env: TOXENV=py39
 install: pip install -U tox coveralls
 script: tox
