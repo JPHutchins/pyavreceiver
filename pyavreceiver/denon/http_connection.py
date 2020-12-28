@@ -1,5 +1,4 @@
 """Define an HTTP connection to a Denon/Marantz receiver."""
-import asyncio
 from xml.etree import ElementTree as ET
 
 import aiohttp
