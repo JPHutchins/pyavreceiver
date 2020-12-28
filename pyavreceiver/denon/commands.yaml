@@ -58,32 +58,32 @@ MU:
   "OFF": false
 SI:
   ^name: source
-  PHONO:
-  CD:
-  TUNER:
-  DVD:
-  BD: blu-ray
-  TV:
-  SAT/CBL:
-  DVR:
-  GAME:
-  GAME2:
-  V.AUX:
-  DOCK:
-  HDRADIO:
-  IPOD:
-  RHAPSODY:
-  NAPSTER:
-  PANDORA:
-  LASTFM:
-  FLICKR:
-  FAVORITES:
-  IRADIO:
-  SERVER:
-  USB DIRECT:
-  IPOD DIRECT:
-  USB:
-  IPD:
+  # PHONO:
+  # CD:
+  # TUNER:
+  # DVD:
+  # BD: blu-ray
+  # TV:
+  # SAT/CBL:
+  # DVR:
+  # GAME:
+  # GAME2:
+  # V.AUX:
+  # DOCK:
+  # HDRADIO:
+  # IPOD:
+  # RHAPSODY:
+  # NAPSTER:
+  # PANDORA:
+  # LASTFM:
+  # FLICKR:
+  # FAVORITES:
+  # IRADIO:
+  # SERVER:
+  # USB DIRECT:
+  # IPOD DIRECT:
+  # USB:
+  # IPD:
 ZM:
   ^name: "zone1_power"
   "ON": true
