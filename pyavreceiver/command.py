@@ -28,6 +28,10 @@ class CommandValues:
         """Patch to dict.get()."""
         return self._values.get(name)
 
+    def update(self, _dict):
+        """Patch to dict.update()."""
+        self._values.update(_dict)
+
     def __getattr__(self, name: str) -> str:
         if name in self._values:
             return self._values[name]
@@ -37,6 +41,11 @@ class CommandValues:
         if name in self._values:
             return self._values[name]
         raise AVReceiverInvalidArgumentError
+
+    def __setitem__(self, name: str, val):
+        """Only set if name does not exist."""
+        if name not in self._values:
+            self._values[name] = val
 
 
 class TelnetCommand(ABC):
@@ -64,7 +73,7 @@ class TelnetCommand(ABC):
         self._val = val
         self._valid_strings = valid_strings
 
-        self._val_translate = {"True": "ON", "False": "OFF"}
+        # self._val_translate = {"True": "ON", "False": "OFF"}
         self._message = message
 
     @abstractmethod
