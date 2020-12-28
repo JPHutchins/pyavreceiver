@@ -11,7 +11,7 @@ import telnetlib3
 from pyavreceiver import const
 from pyavreceiver.response import Message
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -206,7 +206,7 @@ class TelnetConnection(ABC):
             )
             return
 
-        _LOGGER.info("queueing command: %s", command.message)
+        _LOGGER.debug("queueing command: %s", command.message)
 
         self._queued_commands[command.command] = {
             "message": command.message,
@@ -226,7 +226,7 @@ class TelnetConnection(ABC):
                     try:
                         _, next_command = self._queued_commands.popitem(last=False)
                         if next_command is not None:
-                            _LOGGER.info("Popped command: %s", next_command["message"])
+                            _LOGGER.debug("Popped command: %s", next_command["message"])
                             self._writer.write(next_command["message"])
                             await self._writer.drain()
                             self._last_command_time = datetime.utcnow()
@@ -257,6 +257,15 @@ class TelnetConnection(ABC):
             _LOGGER.debug("No state update in message: %s", resp.message)
             return
         updated = self._avr.update_state(resp.state_update)
+        expected_response_deque = self._expected_responses.get(resp.command)
+        if expected_response_deque:
+            try:
+                expected_response = expected_response_deque.popleft()
+                expected_response.set(resp)
+            except IndexError:
+                _LOGGER.debug("No expected response for: %s", resp.command)
+        else:
+            _LOGGER.debug("No expected response matched: %s", resp.command)
         if updated:
             self._avr.dispatcher.send(const.SIGNAL_STATE_UPDATE, resp.message)
         _LOGGER.debug("Event received: %s", resp.state_update)
@@ -272,10 +281,21 @@ class ExpectedResponse:
 
     def __init__(self, command: str, val: str):
         """Init a new instance of the CommandEvent."""
+        self._event = asyncio.Event()
         self._command = command
         self._val = val
         self._response = None
         self._time_sent = datetime.utcnow()
+
+    async def wait(self):
+        """Wait until the event is set."""
+        await self._event.wait()
+        return self._response
+
+    def set(self, message: Message):
+        """Set the response."""
+        self._response = message
+        self._event.set()
 
     @property
     def command(self) -> int:
