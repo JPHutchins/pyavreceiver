@@ -18,6 +18,8 @@ class Zone:
     def set(self, name: str, val=None) -> bool:
         """Request the receiver set the name to val."""
         # pylint: disable=protected-access
+        if not self._avr.power:
+            return False
         command = self._avr._connection._command_lookup[
             f"{self._zone_prefix}{name}"
         ].set_val(val)
