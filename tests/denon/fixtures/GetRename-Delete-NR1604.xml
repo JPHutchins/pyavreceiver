@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rx>
+    <cmd>
+        <functionrename>
+            <list>
+                <name>TUNER</name>
+                <rename>TUNER</rename>
+            </list>
+            <list>
+                <name>CD</name>
+                <rename>CD          </rename>
+            </list>
+            <list>
+                <name>M-XPORT</name>
+                <rename>M-XPort     </rename>
+            </list>
+            <list>
+                <name>NETWORK</name>
+                <rename>NETWORK</rename>
+            </list>
+            <list>
+                <name>DVD</name>
+                <rename>DVD         </rename>
+            </list>
+            <list>
+                <name>Blu-ray</name>
+                <rename>Blu-ray     </rename>
+            </list>
+            <list>
+                <name>TV AUDIO</name>
+                <rename>TV AUDIO    </rename>
+            </list>
+            <list>
+                <name>CBL/SAT</name>
+                <rename>CBL/SAT     </rename>
+            </list>
+            <list>
+                <name>GAME</name>
+                <rename>GAME        </rename>
+            </list>
+            <list>
+                <name>AUX1</name>
+                <rename>AUX1        </rename>
+            </list>
+            <list>
+                <name>AUX2</name>
+                <rename>AUX2        </rename>
+            </list>
+            <list>
+                <name>Media Player</name>
+                <rename>MEDIA PLAYER</rename>
+            </list>
+            <list>
+                <name>iPod/USB</name>
+                <rename>iPod/USB</rename>
+            </list>
+        </functionrename>
+    </cmd>
+    <cmd>
+        <functiondelete>
+            <list>
+                <name>TUNER</name>
+                <FuncName>TUNER</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>CD</name>
+                <FuncName>CD</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>M-XPort</name>
+                <FuncName>M-XPort</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>NETWORK</name>
+                <FuncName>NETWORK</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>DVD</name>
+                <FuncName>DVD</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>Blu-ray</name>
+                <use>1</use>
+            </list>
+            <list>
+                <name>TV AUDIO</name>
+                <FuncName>TV AUDIO</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>CBL/SAT</name>
+                <FuncName>CBL/SAT</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>GAME</name>
+                <FuncName>GAME</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>AUX1</name>
+                <FuncName>AUX1</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>AUX2</name>
+                <FuncName>AUX2</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>Media Player</name>
+                <FuncName>Media Player</FuncName>
+                <use>1</use>
+            </list>
+            <list>
+                <name>iPod/USB</name>
+                <FuncName>iPod/USB</FuncName>
+                <use>1</use>
+            </list>
+        </functiondelete>
+    </cmd>
+</rx>
