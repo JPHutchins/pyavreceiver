@@ -94,6 +94,7 @@ FUNCTION_DB_TO_NUM = "db_to_num"
 INFO_MODEL = "model_name"
 INFO_MAC = "mac_address"
 INFO_ZONES = "zones"
+INFO_SERIAL = "serial_number"
 
 MESSAGE_INTERVAL_LIMIT = 50  # milliseconds
 
