@@ -1,5 +1,10 @@
 """Define constants for Denon/Marantz."""
 
+API_DEVICE_INFO_URL = "/goform/Deviceinfo.xml"
+API_MAIN_ZONE_XML_STATUS_URL = "/goform/formMainZone_MainZoneXmlStatus.xml"
+API_MAIN_ZONE_XML_URL = "/goform/formMainZone_MainZoneXml.xml"
+API_PORT = 80
+
 API_2016_PORT = 8080
 API_2016_DEVICE_INFO_URL = "/goform/Deviceinfo.xml"
 

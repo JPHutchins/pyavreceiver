@@ -14,12 +14,41 @@ class DenonHTTPApi(HTTPConnection):
     async def get_device_info(self) -> dict:
         "Get information about the device"
         xml = await self._get_device_info()
-        return DenonHTTPApi.make_device_info_dict(xml)
+        self.make_device_info_dict(xml)
+        if self._upnp_data:
+            self.make_device_info_dict(self._upnp_data)
+        return self.device_info
 
     async def get_source_names(self) -> dict:
         """Get the renamed sources."""
-        xml = await self.get_renamed_deleted_sources()
-        return DenonHTTPApi.make_renamed_dict(xml)
+        xml_body = DenonHTTPApi.make_xml_request(
+            ["GetRenameSource", "GetDeletedSource"]
+        )
+        xml = await self._app_command(xml_body)
+        if xml:
+            return DenonHTTPApi.make_renamed_dict(xml)
+
+        # AppCommand endpoint failed, use alternate
+        xml = await self._get_mainzone_xml() or await self._get_status_xml()
+        return DenonHTTPApi.make_renamed_dict_legacy(xml)
+
+    async def _get_status_xml(self) -> str:
+        """Get the Main Zone status XML endpoint."""
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"http://{self.host}:{self.port}{denon_const.API_MAIN_ZONE_XML_STATUS_URL}"
+            ) as resp:
+                if resp.status() == 200:
+                    return await resp.text()
+
+    async def _get_mainzone_xml(self) -> str:
+        """Get the Main Zone status XML endpoint."""
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"http://{self.host}:{self.port}{denon_const.API_MAIN_ZONE_XML_URL}"
+            ) as resp:
+                if resp.status() == 200:
+                    return await resp.text()
 
     async def _get_device_info(self):
         """Get information about the device."""
@@ -27,8 +56,8 @@ class DenonHTTPApi(HTTPConnection):
             async with session.post(
                 f"http://{self.host}:{self.port}{self._device_info_url}"
             ) as resp:
-                text = await resp.text()
-                return text
+                if resp.status() == 200:
+                    return await resp.text()
 
     async def _app_command(self, xml: bytes):
         """Make request to AppCommand.xml endpoint."""
@@ -36,14 +65,9 @@ class DenonHTTPApi(HTTPConnection):
             async with session.post(
                 f"http://{self.host}:{self.port}/goform/AppCommand.xml", data=xml
             ) as resp:
-                text = await resp.text()
-                return text
-
-    async def get_renamed_deleted_sources(self):
-        """Get the renamed and deleted sources."""
-        xml = DenonHTTPApi.make_xml_request(["GetRenameSource", "GetDeletedSource"])
-        resp = await self._app_command(xml)
-        return resp
+                if resp.status() == 200:
+                    return await resp.text()
+                return False
 
     @staticmethod
     def make_renamed_dict(xml) -> dict:
@@ -72,16 +96,60 @@ class DenonHTTPApi(HTTPConnection):
         return rename_map
 
     @staticmethod
-    def make_device_info_dict(xml) -> dict:
+    def make_renamed_dict_legacy(xml) -> dict:
+        """Parse the XML response for renamed and deleted sources."""
+        root = ET.fromstring(xml)
+
+        original_names = []
+        skip_source = 0
+        for name in root.find("InputFuncList"):
+            try:
+                if name.text == "SOURCE":
+                    skip_source = 1
+                    continue
+                original_names.append(name.text)
+            except AttributeError:
+                continue
+
+        deleted = [False] * len(original_names)
+
+        delete_list = root.find("SourceDelete")
+        if delete_list:
+            for i, delete in enumerate(delete_list[skip_source:]):
+                try:
+                    if delete.text == "DEL":
+                        deleted[i] = True
+                except AttributeError:
+                    continue
+
+        rename_map = {}
+        for i, name in enumerate(root.find("RenameSource")[skip_source:]):
+            if not deleted[i]:
+                original_name = original_names[i]
+                try:
+                    name = name.text.strip()
+                except AttributeError:
+                    name = original_name
+                rename_map[name] = (
+                    denon_const.MAP_HTTP_SOURCE_NAME_TO_TELNET.get(
+                        original_name.lower()
+                    )
+                    or original_name.upper()
+                )
+        return rename_map
+
+    def make_device_info_dict(self, xml) -> dict:
         """Parse response for information."""
         root = ET.fromstring(xml)
-        info = {
-            const.INFO_MODEL: get_text(root, "ModelName"),
-            const.INFO_MAC: get_text(root, "MacAddress"),
-            const.INFO_ZONES: get_text(root, "DeviceZones") or "0",
-        }
-
-        return info
+        xmlns = "{urn:schemas-upnp-org:device-1-0}"
+        self._device_info[const.INFO_MODEL] = (
+            self._device_info.get(const.INFO_MODEL)
+            or get_text(root, "ModelName")
+            or get_text(root, f"*/{xmlns}modelName")
+        )
+        self._device_info[const.INFO_MAC] = get_text(root, "MacAddress")
+        self._device_info[const.INFO_SERIAL] = get_text(root, f"*/{xmlns}serialNumber")
+        self._device_info[const.INFO_ZONES] = get_text(root, "DeviceZones") or "0"
 
     @staticmethod
     def make_xml_request(commands: list) -> bytes:
@@ -98,11 +166,20 @@ class DenonHTTPApi(HTTPConnection):
         return "".join(xml_parts).encode()
 
 
+class DenonAVRApi(DenonHTTPApi):
+    """Define the Denon/Marantz AVR-X 2016 API."""
+
+    def __init__(self, host, upnp_data):
+        super().__init__(host, upnp_data=upnp_data)
+        self.port = denon_const.API_PORT
+        self._device_info_url = denon_const.API_DEVICE_INFO_URL
+
+
 class DenonAVRX2016Api(DenonHTTPApi):
     """Define the Denon/Marantz AVR-X 2016 API."""
 
-    def __init__(self, host, upnp_data, session=None):
-        super().__init__(host, session)
+    def __init__(self, host, upnp_data):
+        super().__init__(host, upnp_data=upnp_data)
         self.port = denon_const.API_2016_PORT
         self._device_info_url = denon_const.API_2016_DEVICE_INFO_URL
 
