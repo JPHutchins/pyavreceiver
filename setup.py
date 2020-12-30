@@ -1,4 +1,4 @@
-"""pyheos"""
+"""pyavreceiver"""
 
 import os
 
@@ -30,7 +30,7 @@ setup(
     keywords="denon marantz receiver",
     zip_safe=False,
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
