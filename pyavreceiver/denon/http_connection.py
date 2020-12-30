@@ -38,7 +38,7 @@ class DenonHTTPApi(HTTPConnection):
             async with session.get(
                 f"http://{self.host}:{self.port}{denon_const.API_MAIN_ZONE_XML_STATUS_URL}"
             ) as resp:
-                if resp.status() == 200:
+                if resp.status == 200:
                     return await resp.text()
 
     async def _get_mainzone_xml(self) -> str:
@@ -47,7 +47,7 @@ class DenonHTTPApi(HTTPConnection):
             async with session.get(
                 f"http://{self.host}:{self.port}{denon_const.API_MAIN_ZONE_XML_URL}"
             ) as resp:
-                if resp.status() == 200:
+                if resp.status == 200:
                     return await resp.text()
 
     async def _get_device_info(self):
@@ -56,7 +56,7 @@ class DenonHTTPApi(HTTPConnection):
             async with session.post(
                 f"http://{self.host}:{self.port}{self._device_info_url}"
             ) as resp:
-                if resp.status() == 200:
+                if resp.status == 200:
                     return await resp.text()
 
     async def _app_command(self, xml: bytes):
@@ -65,7 +65,7 @@ class DenonHTTPApi(HTTPConnection):
             async with session.post(
                 f"http://{self.host}:{self.port}/goform/AppCommand.xml", data=xml
             ) as resp:
-                if resp.status() == 200:
+                if resp.status == 200:
                     return await resp.text()
                 return False
 
