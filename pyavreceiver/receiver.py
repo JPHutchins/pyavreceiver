@@ -58,9 +58,10 @@ class AVReceiver:
         )
         self._main_zone = self._main_zone_class(self)
         # pylint: disable=protected-access
-        self._connection._command_lookup[const.ATTR_SOURCE]._values = CommandValues(
-            self._sources
-        )
+        if self._sources:
+            self._connection._command_lookup[const.ATTR_SOURCE]._values = CommandValues(
+                self._sources
+            )
 
     async def connect(
         self,
