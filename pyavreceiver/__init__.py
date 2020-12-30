@@ -36,4 +36,4 @@ async def factory(host: str):
             if name == "denon-avr":
                 http_api = DenonAVRApi(host, await response.text())
                 return DenonReceiver(host, http_api=http_api)
-        raise AVReceiverIncompatibleDeviceError
+    raise AVReceiverIncompatibleDeviceError
