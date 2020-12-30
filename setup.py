@@ -24,7 +24,12 @@ setup(
     author_email="jphutchins@gmail.com",
     license="ASL 2.0",
     packages=find_packages(exclude=("tests", "tests.*")),
-    install_requires=[],
+    install_requires=[
+        "aiofiles",
+        "aiohttp",
+        "PyYAML",
+        "telnetlib3"
+    ],
     tests_require=["tox>=3.5.0,<4.0.0"],
     platforms=["any"],
     keywords="denon marantz receiver",
