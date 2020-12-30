@@ -4,8 +4,13 @@ import asyncio
 import aiohttp
 
 from pyavreceiver import const
-from pyavreceiver.denon.http_connection import DenonAVRX2016Api
+from pyavreceiver.denon.http_connection import (
+    DenonAVRApi,
+    DenonAVRX2016Api,
+    DenonAVRXApi,
+)
 from pyavreceiver.denon.receiver import DenonReceiver
+from pyavreceiver.error import AVReceiverIncompatibleDeviceError
 
 
 async def factory(host: str):
@@ -25,3 +30,10 @@ async def factory(host: str):
             if name == "denon-avr-x-2016":
                 http_api = DenonAVRX2016Api(host, await response.text())
                 return DenonReceiver(host, http_api=http_api)
+            if name == "denon-avr-x":
+                http_api = DenonAVRXApi(host, await response.text())
+                return DenonReceiver(host, http_api=http_api)
+            if name == "denon-avr":
+                http_api = DenonAVRApi(host, await response.text())
+                return DenonReceiver(host, http_api=http_api)
+        raise AVReceiverIncompatibleDeviceError

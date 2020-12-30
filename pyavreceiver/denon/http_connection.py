@@ -167,7 +167,16 @@ class DenonHTTPApi(HTTPConnection):
 
 
 class DenonAVRApi(DenonHTTPApi):
-    """Define the Denon/Marantz AVR-X 2016 API."""
+    """Define the Denon/Marantz AVR API."""
+
+    def __init__(self, host, upnp_data):
+        super().__init__(host, upnp_data=upnp_data)
+        self.port = denon_const.API_PORT
+        self._device_info_url = denon_const.API_DEVICE_INFO_URL
+
+
+class DenonAVRXApi(DenonHTTPApi):
+    """Define the Denon/Marantz AVR-X API."""
 
     def __init__(self, host, upnp_data):
         super().__init__(host, upnp_data=upnp_data)
