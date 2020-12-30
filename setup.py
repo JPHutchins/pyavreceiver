@@ -25,11 +25,11 @@ setup(
     license="ASL 2.0",
     packages=find_packages(exclude=("tests", "tests.*")),
     install_requires=[
-        "aiofiles",
         "aiohttp",
         "PyYAML",
         "telnetlib3"
     ],
+    include_package_data=True,
     tests_require=["tox>=3.5.0,<4.0.0"],
     platforms=["any"],
     keywords="denon marantz receiver",

@@ -54,7 +54,7 @@ class TelnetConnection(ABC):
         self._message_interval_limit = const.MESSAGE_INTERVAL_LIMIT
 
     @abstractmethod
-    async def _load_command_dict(self, path=None):
+    def _load_command_dict(self, path=None):
         """Load the commands YAML."""
 
     @abstractmethod
@@ -71,7 +71,7 @@ class TelnetConnection(ABC):
 
     async def init(self, *, auto_reconnect: bool = True, reconnect_delay: float = -1):
         """Await the async initialization."""
-        await self._load_command_dict()
+        self._load_command_dict()
         await self.connect(
             auto_reconnect=auto_reconnect, reconnect_delay=reconnect_delay
         )
