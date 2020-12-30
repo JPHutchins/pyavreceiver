@@ -1,9 +1,9 @@
 """Define the Denon/Marantz telnet connection."""
 import logging
 from datetime import datetime
+from importlib import resources
 from typing import Optional
 
-import aiofiles
 import yaml
 
 from pyavreceiver.denon import const as denon_const
@@ -30,9 +30,9 @@ class DenonTelnetConnection(TelnetConnection):
         super().__init__(avr, host, port=port, timeout=timeout, heart_beat=heart_beat)
         self._message_interval_limit = denon_const.MESSAGE_INTERVAL_LIMIT
 
-    async def _load_command_dict(self, path=None):
-        async with aiofiles.open("pyavreceiver/denon/commands.yaml") as file:
-            self._command_dict = yaml.safe_load(await file.read())
+    def _load_command_dict(self, path=None):
+        with resources.open_text("pyavreceiver.denon", "commands.yaml") as file:
+            self._command_dict = yaml.safe_load(file.read())
 
     def _get_command_lookup(self, command_dict):
         return get_command_lookup(command_dict)
