@@ -24,11 +24,7 @@ setup(
     author_email="jphutchins@gmail.com",
     license="ASL 2.0",
     packages=find_packages(exclude=("tests", "tests.*")),
-    install_requires=[
-        "aiohttp",
-        "PyYAML",
-        "telnetlib3"
-    ],
+    install_requires=["aiohttp", "PyYAML", "telnetlib3"],
     include_package_data=True,
     tests_require=["tox>=3.5.0,<4.0.0"],
     platforms=["any"],
@@ -43,5 +39,5 @@ setup(
         "Topic :: Home Automation",
         "Programming Language :: Python :: 3.8",
     ],
-    python_requires='>=3.8',
+    python_requires=">=3.8",
 )

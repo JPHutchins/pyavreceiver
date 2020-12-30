@@ -1,8 +1,8 @@
 """Configure the Denon/Marantz tests."""
+from importlib import resources
+
 import pytest
 import yaml
-
-from importlib import resources
 
 from pyavreceiver.denon.response import DenonMessage
 
