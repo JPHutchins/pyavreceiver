@@ -105,7 +105,7 @@ class DenonHTTPApi(HTTPConnection):
         for name in root.find("InputFuncList"):
             try:
                 if name.text == "SOURCE":
-                    skip_source = 1
+                    skip_source = 1  # Slice subsequent lists from 1:
                     continue
                 original_names.append(name.text)
             except AttributeError:
@@ -147,6 +147,7 @@ class DenonHTTPApi(HTTPConnection):
             or get_text(root, "ModelName")
             or get_text(root, f"*/{xmlns}modelName")
         )
+        #FIXME is this overwriting on the upnp parse?  add manufacturer
         self._device_info[const.INFO_MAC] = get_text(root, "MacAddress")
         self._device_info[const.INFO_SERIAL] = get_text(root, f"*/{xmlns}serialNumber")
         self._device_info[const.INFO_ZONES] = get_text(root, "DeviceZones") or "0"
@@ -155,13 +156,10 @@ class DenonHTTPApi(HTTPConnection):
     def make_xml_request(commands: list) -> bytes:
         """Prepare XML body for Denon API."""
         xml_parts = ['<?xml version="1.0" encoding="utf-8"?>\n', "<tx>"]
-        cmd_l = '<cmd id="1">'
-        cmd_r = "</cmd>"
         for i, command in enumerate(commands):
-            if i != 0 and i % 5 == 0:
-                # API allows multiple XML roots, limit 5 commands each
+            if i != 0 and i % 5 == 0:  # API allows multiple XML roots, limit 5 commands each
                 xml_parts.append("</tx><tx>")
-            xml_parts.append(f"{cmd_l}{command}{cmd_r}")
+            xml_parts.append(f'<cmd id="1">{command}</cmd>')
         xml_parts.append("</tx>")
         return "".join(xml_parts).encode()
 
