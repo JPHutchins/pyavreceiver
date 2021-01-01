@@ -1,7 +1,7 @@
 """Define constants."""
 
 __title__ = "pyavreceiver"
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 
 
 CLI_PORT = 23
@@ -33,7 +33,6 @@ EVENT_TELNET = "telnet"
 EVENT_DISCONNECTED = "disconnected"
 EVENT_CONNECTED = "connected"
 
-SIGNAL_STATE_UPDATE = "state_update"
 SIGNAL_TELNET_EVENT = "telnet_event"
 SIGNAL_STATE_UPDATE = "state_update"
 
@@ -43,6 +42,7 @@ ATTR_VOLUME = "volume"
 ATTR_VOLUME_UP = "volume_up"
 ATTR_VOLUME_DOWN = "volume_down"
 ATTR_LFE_LEVEL = "lfe_level"
+ATTR_MAX_VOLUME = "max_volume"
 ATTR_MUTE = "mute"
 ATTR_SOURCE = "source"
 ATTR_SOUND_MODE = "sound_mode"
