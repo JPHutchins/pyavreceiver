@@ -15,17 +15,14 @@ from pyavreceiver.error import AVReceiverIncompatibleDeviceError
 
 async def factory(host: str):
     """Return an instance of an AV Receiver."""
-
-    tasks = []
-    names = []
     async with aiohttp.ClientSession() as session:
+        names, tasks = [], []
         for name, url in const.UPNP_ENDPOINTS.items():
             names.append(name)
             tasks.append(
-                asyncio.create_task(session.get(f"http://{host}{url}", timeout=1))
+                asyncio.create_task(session.get(f"http://{host}{url}", timeout=5))
             )
-        results = await asyncio.gather(*tasks)
-    for name, response in zip(names, results):
+    for name, response in zip(names, await asyncio.gather(*tasks)):
         if response.status == 200:
             if name == "denon-avr-x-2016":
                 http_api = DenonAVRX2016Api(host, await response.text())
