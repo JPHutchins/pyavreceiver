@@ -212,6 +212,7 @@ class TelnetConnection(ABC):
 
         _LOGGER.debug("queueing command: %s", command.message)
 
+        # Overwrite older queued commands that match command.command
         self._queued_commands[command.command] = {
             "message": command.message,
             "command": command.command,
