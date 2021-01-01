@@ -1,13 +1,13 @@
 """Define constants."""
 
 __title__ = "pyavreceiver"
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 
 
 CLI_PORT = 23
 DEFAULT_TIMEOUT = 10.0
 DEFAULT_RECONNECT_DELAY = 10.0
-DEFAULT_HEART_BEAT = 11.0
+DEFAULT_HEART_BEAT = 10.0
 DEFAULT_STEP = 5
 
 STATE_CONNECTED = "connected"
