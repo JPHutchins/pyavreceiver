@@ -36,7 +36,7 @@ class Zone(ABC):
         """Update all known attributes in commands."""
         for name in self.commands:
             self.update(name)
-        asyncio.sleep(4)
+        await asyncio.sleep(4)
 
     @property
     def avr(self):
@@ -72,6 +72,7 @@ class Zone(ABC):
         """Request the receiver set the bass to val."""
         return self.set(const.ATTR_BASS, val)
 
+    @property
     def max_volume(self) -> int:
         """The max volume."""
         return self.get(const.ATTR_MAX_VOLUME)
@@ -197,7 +198,7 @@ class MainZone(Zone):
         """Get the list of available sound modes."""
         return [
             k.capitalize()
-            for k, v in self.commands[const.ATTR_SOUND_MODE].values
+            for k, v in self.commands[const.ATTR_SOUND_MODE].values.items()
             if v is not None
         ]
 
