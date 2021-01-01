@@ -29,4 +29,4 @@ class DenonMainZone(MainZone):
     @property
     def source_list(self):
         """Return a list of available input sources."""
-        return [k for k, v in self.avr.sources.keys() if v is not None]
+        return [k for k, v in self.avr.sources.items() if v is not None]
