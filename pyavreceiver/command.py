@@ -1,5 +1,6 @@
 """Define commands."""
 from abc import ABC, abstractmethod
+from typing import Sequence, Tuple, Union
 
 from pyavreceiver.error import AVReceiverInvalidArgumentError
 
@@ -15,29 +16,35 @@ class CommandValues:
 
     def __init__(self, values: dict):
         self._values = values
-        self._values["min"] = self._values.get("min")
-        self._values["max"] = self._values.get("max")
+        if self._values.get("min") is not None:
+            self._values["min"] = self._values.get("min")
+        if self._values.get("max") is not None:
+            self._values["max"] = self._values.get("max")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self._values)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str({x for x in self._values if self._values[x] is not None})
 
-    def get(self, name):
+    def get(self, name) -> Union[int, str, float]:
         """Patch to dict.get()."""
         return self._values.get(name)
 
     def update(self, _dict):
         """Patch to dict.update()."""
         self._values.update(_dict)
+    
+    def items(self) -> Sequence[Tuple[str, Union[int, str, float]]]:
+        """Patch to dict.items()."""
+        return self._values.items()
 
-    def __getattr__(self, name: str) -> str:
+    def __getattr__(self, name: str) -> Union[int, str, float]:
         if name in self._values:
             return self._values[name]
         raise AVReceiverInvalidArgumentError
 
-    def __getitem__(self, name: str) -> str:
+    def __getitem__(self, name: str) -> Union[int, str, float]:
         if name in self._values:
             return self._values[name]
         raise AVReceiverInvalidArgumentError
@@ -72,8 +79,6 @@ class TelnetCommand(ABC):
         self._zero = zero
         self._val = val
         self._valid_strings = valid_strings
-
-        # self._val_translate = {"True": "ON", "False": "OFF"}
         self._message = message
 
     @abstractmethod
