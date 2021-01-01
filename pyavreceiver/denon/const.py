@@ -27,6 +27,9 @@ DEVICE_INFO_ENDPOINTS = [
 
 DEVICE_INFO_SEARCH = {"model": ["ModelName", "ManualModelName"]}
 
+# Valid source on auxiliary zones that follows main zone
+SOURCE_FOLLOW = "SOURCE"
+
 SOURCE_AUX = "AUX1"
 SOURCE_BLURAY = "BD"
 SOURCE_BLUETOOTH = "BT"

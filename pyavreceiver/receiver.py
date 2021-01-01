@@ -23,8 +23,8 @@ class AVReceiver:
         timeout: float = const.DEFAULT_TIMEOUT,
         heart_beat: Optional[float] = const.DEFAULT_HEART_BEAT,
         dispatcher: Dispatcher = Dispatcher(),
-        main_zone: Zone = Zone,
-        aux_zone: Zone = Zone,
+        main_zone: Zone = None,
+        aux_zone: Zone = None,
     ):
         """Init the device."""
         self._host = host
@@ -53,9 +53,10 @@ class AVReceiver:
         """Await the initialization of the device."""
         if self._http and self._http_connection:
             await self.update_device_info()
-        await self._connection.init(
+        disconnect = await self._connection.init(
             auto_reconnect=auto_reconnect, reconnect_delay=reconnect_delay
         )
+        self._connections.append(disconnect)
         self._main_zone = self._main_zone_class(self)
         # pylint: disable=protected-access
         if self._sources:
@@ -117,14 +118,34 @@ class AVReceiver:
         return self._host
 
     @property
+    def mac(self) -> str:
+        """Get the MAC address."""
+        return self._mac_address
+
+    @property
     def main(self) -> Zone:
         """Get the main zone object."""
         return self._main_zone
 
     @property
+    def model(self) -> str:
+        """Get the model."""
+        return self._model_name
+
+    @property
+    def sources(self) -> dict:
+        """Get the input sources map."""
+        return self._sources if self._sources else {}
+
+    @property
     def state(self) -> defaultdict:
         """Get the current state."""
         return self._state
+
+    @property
+    def telnet_connection(self) -> TelnetConnection:
+        """Get the telnet connection."""
+        return self._connection
 
     @property
     def power(self) -> str:

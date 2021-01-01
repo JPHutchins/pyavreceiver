@@ -3,7 +3,7 @@ from typing import Optional
 
 from pyavreceiver.denon import const as denon_const
 from pyavreceiver.denon.telnet_connection import DenonTelnetConnection
-from pyavreceiver.denon.zone import DenonMainZone
+from pyavreceiver.denon.zone import DenonAuxZone, DenonMainZone
 from pyavreceiver.dispatch import Dispatcher
 from pyavreceiver.receiver import AVReceiver
 from pyavreceiver.zone import Zone
@@ -24,7 +24,7 @@ class DenonReceiver(AVReceiver):
         heart_beat: Optional[float] = denon_const.DEFAULT_HEART_BEAT,
         dispatcher: Dispatcher = Dispatcher(),
         main_zone: DenonMainZone = DenonMainZone,
-        aux_zone: Zone = Zone
+        aux_zone: Zone = DenonAuxZone
     ):
         super().__init__(
             host,

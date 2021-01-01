@@ -1,8 +1,12 @@
 """Define the interface of an A/V Receiver Zone."""
+import asyncio
+from abc import ABC, abstractmethod
+from typing import Sequence
+
 from pyavreceiver import const
 
 
-class Zone:
+class Zone(ABC):
     """Define an Audio/Video Receiver zone."""
 
     def __init__(self, avr, zone: str = "main"):
@@ -18,24 +22,41 @@ class Zone:
     def set(self, name: str, val=None) -> bool:
         """Request the receiver set the name to val."""
         # pylint: disable=protected-access
-        if not self._avr.power:
-            return False
-        command = self._avr._connection._command_lookup[
-            f"{self._zone_prefix}{name}"
-        ].set_val(val)
-        self._avr._connection.send_command(command)
+        command = self.commands[f"{self._zone_prefix}{name}"].set_val(val)
+        self.telnet_connection.send_command(command)
         return True
 
     def update(self, name: str):
         """Request the receiver to send update of the value of name."""
         # pylint: disable=protected-access
-        command = self._avr._connection._command_lookup[name].set_query()
-        self._avr._connection.send_command(command)
+        command = self.commands[name].set_query()
+        self.telnet_connection.send_command(command)
 
-    def update_all(self):
+    async def update_all(self):
         """Update all known attributes in commands."""
         for name in self.commands:
             self.update(name)
+        asyncio.sleep(4)
+
+    @property
+    def avr(self):
+        """Return the AVReceiver instance."""
+        return self._avr
+
+    @property
+    def telnet_connection(self):
+        """Return the TelnetConnection instance."""
+        return self.avr.telnet_connection
+
+    @property
+    def available(self):
+        """Return True if the device is available."""
+        return self.avr.connection_state == const.STATE_CONNECTED
+
+    @property
+    @abstractmethod
+    def source_list(self) -> Sequence[str]:
+        """Return a list of available input sources."""
 
     @property
     def commands(self) -> dict:
@@ -50,6 +71,10 @@ class Zone:
     def set_bass(self, val: float) -> bool:
         """Request the receiver set the bass to val."""
         return self.set(const.ATTR_BASS, val)
+
+    def max_volume(self) -> int:
+        """The max volume."""
+        return self.get(const.ATTR_MAX_VOLUME)
 
     @property
     def mute(self) -> str:
@@ -72,7 +97,8 @@ class Zone:
     @property
     def source(self) -> str:
         """The state of source."""
-        return self.get(const.ATTR_SOURCE)
+        mapper = {v: k for k, v in self.avr.sources.items()}
+        return mapper.get(self.get(const.ATTR_SOURCE))
 
     def set_source(self, val: str) -> bool:
         """Request the receiver set the source to val."""
@@ -164,7 +190,16 @@ class MainZone(Zone):
 
     def set_soundmode(self, val: str) -> bool:
         """Request the receiver set the sound mode to val."""
-        return self.set(const.ATTR_SOUND_MODE, val)
+        return self.set(const.ATTR_SOUND_MODE, val.lower())
+
+    @property
+    def sound_mode_list(self) -> Sequence[str]:
+        """Get the list of available sound modes."""
+        return [
+            k.capitalize()
+            for k, v in self.commands[const.ATTR_SOUND_MODE].values
+            if v is not None
+        ]
 
     @property
     def subwoofer_one(self) -> bool:

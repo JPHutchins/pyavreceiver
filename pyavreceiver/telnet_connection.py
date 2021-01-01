@@ -11,8 +11,11 @@ import telnetlib3
 from pyavreceiver import const
 from pyavreceiver.response import Message
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 _LOGGER = logging.getLogger(__name__)
+
+# Monkey patch misbehaving repr until fixed
+telnetlib3.client_base.BaseClient.__repr__ = lambda x: "AV Receiver"
 
 
 class TelnetConnection(ABC):
@@ -76,6 +79,7 @@ class TelnetConnection(ABC):
             auto_reconnect=auto_reconnect, reconnect_delay=reconnect_delay
         )
         self._command_lookup = self._get_command_lookup(self._command_dict)
+        return self.disconnect
 
     async def connect(
         self, *, auto_reconnect: bool = False, reconnect_delay: float = -1
