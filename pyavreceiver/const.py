@@ -5,6 +5,8 @@ __version__ = "0.0.8"
 
 
 CLI_PORT = 23
+DEFAULT_COMMAND_EXPIRATION = 10
+DEFAULT_TELNET_TIMEOUT = 0.25  # 250ms
 DEFAULT_TIMEOUT = 10.0
 DEFAULT_RECONNECT_DELAY = 10.0
 DEFAULT_HEART_BEAT = 10.0
@@ -36,6 +38,9 @@ EVENT_CONNECTED = "connected"
 SIGNAL_TELNET_EVENT = "telnet_event"
 SIGNAL_STATE_UPDATE = "state_update"
 
+QUEUE_CANCEL = "queue_cancel"
+QUEUE_FAILED = "queue_failed"
+QUEUE_NO_CANCEL = "queue_no_cancel"
 
 ATTR_POWER = "power"
 ATTR_VOLUME = "volume"
@@ -91,8 +96,10 @@ FUNCTION_VOLUME = "volume"
 FUNCTION_NUM_TO_DB = "num_to_db"
 FUNCTION_DB_TO_NUM = "db_to_num"
 
+INFO_FRIENDLY_NAME = "friendly_name"
 INFO_MODEL = "model_name"
 INFO_MAC = "mac_address"
+INFO_MANUFACTURER = "manufacturer"
 INFO_ZONES = "zones"
 INFO_SERIAL = "serial_number"
 
