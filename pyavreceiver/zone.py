@@ -1,9 +1,18 @@
 """Define the interface of an A/V Receiver Zone."""
-import asyncio
 from abc import ABC, abstractmethod
-from typing import Sequence
+from typing import Coroutine, Sequence, Union
 
 from pyavreceiver import const
+
+
+def filter_zones(item: tuple) -> bool:
+    """Return true for main zone."""
+    name, _ = item
+    prefix = ["Z2", "Z3", const.ZONE_PREFIX["zone2"], const.ZONE_PREFIX["zone3"]]
+    for pre in prefix:
+        if name.startswith(pre):
+            return False
+    return True
 
 
 class Zone(ABC):
@@ -13,30 +22,34 @@ class Zone(ABC):
         """Init the zone."""
         self._avr = avr
         self._zone_prefix = const.ZONE_PREFIX[zone.lower()]
-        self._commands = avr._connection._command_lookup  # type: dict
+        self._commands = dict(
+            filter(filter_zones, avr._connection._command_lookup.items())
+        )  # type: dict
 
     def get(self, name: str) -> str:
         """Get the current state of the nameibute name."""
         return self._avr.state.get(self._zone_prefix + name)
 
-    def set(self, name: str, val=None) -> bool:
+    def set(self, name: str, val=None, qos=0) -> Union[Coroutine, bool]:
         """Request the receiver set the name to val."""
         # pylint: disable=protected-access
-        command = self.commands[f"{self._zone_prefix}{name}"].set_val(val)
-        self.telnet_connection.send_command(command)
-        return True
+        if qos == 0:
+            command = self.commands[f"{self._zone_prefix}{name}"].set_val(val)
+            self.telnet_connection.send_command(command)
+            return True
+        command = self.commands[f"{self._zone_prefix}{name}"].set_val(val, qos=qos)
+        return self.telnet_connection.async_send_command(command)
 
-    def update(self, name: str):
+    def update(self, name: str) -> Coroutine:
         """Request the receiver to send update of the value of name."""
         # pylint: disable=protected-access
-        command = self.commands[name].set_query()
-        self.telnet_connection.send_command(command)
+        command = self.commands[name].set_query(qos=0)
+        return self.telnet_connection.async_send_command(command)
 
     async def update_all(self):
         """Update all known attributes in commands."""
         for name in self.commands:
-            self.update(name)
-        await asyncio.sleep(4)
+            await self.update(name)
 
     @property
     def avr(self):
@@ -68,9 +81,9 @@ class Zone(ABC):
         """The state of bass."""
         return self.get(const.ATTR_BASS)
 
-    def set_bass(self, val: float) -> bool:
+    def set_bass(self, val: float) -> Coroutine:
         """Request the receiver set the bass to val."""
-        return self.set(const.ATTR_BASS, val)
+        return self.set(const.ATTR_BASS, val, 1)
 
     @property
     def max_volume(self) -> int:
@@ -82,18 +95,18 @@ class Zone(ABC):
         """The state of mute."""
         return self.get(const.ATTR_MUTE)
 
-    def set_mute(self, val: bool) -> bool:
+    def set_mute(self, val: bool) -> Coroutine:
         """Request the receiver set mute to val."""
-        return self.set(const.ATTR_MUTE, val)
+        return self.set(const.ATTR_MUTE, val, 3)
 
     @property
     def power(self) -> str:
         """The state of zone power."""
         return self.get(const.ATTR_ZONE1_POWER)
 
-    def set_power(self, val: bool) -> bool:
+    def set_power(self, val: bool) -> Coroutine:
         """Request the receiver set zone power to val."""
-        return self.set(const.ATTR_ZONE1_POWER, val)
+        return self.set(const.ATTR_ZONE1_POWER, val, 3)
 
     @property
     def source(self) -> str:
@@ -101,27 +114,27 @@ class Zone(ABC):
         mapper = {v: k for k, v in self.avr.sources.items()}
         return mapper.get(self.get(const.ATTR_SOURCE))
 
-    def set_source(self, val: str) -> bool:
+    def set_source(self, val: str) -> Coroutine:
         """Request the receiver set the source to val."""
-        return self.set(const.ATTR_SOURCE, val)
+        return self.set(const.ATTR_SOURCE, val, 2)
 
     @property
     def treble(self) -> int:
         """The state of treble."""
         return self.get(const.ATTR_TREBLE)
 
-    def set_treble(self, val: float) -> bool:
+    def set_treble(self, val: float) -> Coroutine:
         """Request the receiver set the treble to val."""
-        return self.set(const.ATTR_TREBLE, val)
+        return self.set(const.ATTR_TREBLE, val, 1)
 
     @property
     def volume(self) -> str:
         """The state of volume."""
         return self.get(const.ATTR_VOLUME)
 
-    def set_volume(self, val: float) -> bool:
+    def set_volume(self, val: float) -> Coroutine:
         """Request the receiver set volume to val."""
-        return self.set(const.ATTR_VOLUME, val)
+        return self.set(const.ATTR_VOLUME, val, 2)
 
     def set_volume_down(self) -> bool:
         """Request the receiver turn the volume down."""
