@@ -1,8 +1,10 @@
 """Define a priority queue for managing streams of commands."""
 from collections import OrderedDict
-from typing import Any, Tuple
+from typing import Any, Tuple, Union
 
+from pyavreceiver import const
 from pyavreceiver.command import Command
+from pyavreceiver.error import QosTooHigh
 
 
 class PriorityQueue:
@@ -35,6 +37,17 @@ class PriorityQueue:
                 all_names.add(name)
         return result
 
+    def clear(self):
+        """Clear the queues."""
+        for queue in self._queues:
+            queue.clear()
+        self._size = 0
+
+    @property
+    def is_empty(self):
+        """Return True if the queue is empty."""
+        return self._size == 0
+
     def get(self, name) -> Any:
         """Get the item from queue if it exists."""
         for queue in self._queues:
@@ -66,23 +79,24 @@ class PriorityQueue:
             return item[1]
         return None
 
-    def push(self, command):
-        """Push command to the queue overwriting conflicts."""
+    def push(self, command) -> Tuple[str, Union[Command, None]]:
+        """Push command to the queue returning overwritten commands"""
         if command.qos > self._qos_levels - 1:
-            raise Exception
+            raise QosTooHigh
 
-        # A new command will always have >= QoS than one reissued by QoS
-        # When a command is reissued it will be previous QoS - 1
+        canceled = None
 
         for qos, queue in enumerate(self._queues):
             if command.command in queue:
                 # Don't add duplicated command at lower QoS
                 if command.qos < qos:
-                    return
+                    return (const.QUEUE_FAILED, queue[command.command])
+                # Save command that will be canceled
+                canceled = queue[command.command]
                 # Update value of command at equal QoS (maintains priority)
                 if command.qos == qos:
                     queue[command.command] = command
-                    return
+                    return (const.QUEUE_CANCEL, canceled)
                 # Delete matching command found at lower QoS
                 del queue[command.command]
                 self._size -= 1
@@ -90,3 +104,7 @@ class PriorityQueue:
         # Add command to the queue at the specified QoS level
         self._queues[command.qos][command.command] = command
         self._size += 1
+
+        if canceled:
+            return (const.QUEUE_CANCEL, canceled)
+        return (const.QUEUE_NO_CANCEL, None)
