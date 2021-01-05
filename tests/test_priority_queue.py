@@ -11,7 +11,7 @@ class GenericCommand(TelnetCommand):
     """Generic Telnet Command."""
 
     def set_val(
-        self, val: Union[int, float, str] = None, qos: int = 0
+        self, val: Union[int, float, str] = None, qos: int = 0, sequence: int = -1
     ) -> TelnetCommand:
         return GenericCommand(
             command=self._command,
@@ -19,7 +19,7 @@ class GenericCommand(TelnetCommand):
             qos=qos,
         )
 
-    def set_query(self) -> TelnetCommand:
+    def set_query(self, qos=0) -> TelnetCommand:
         return self.set_val("?", 0)
 
 
