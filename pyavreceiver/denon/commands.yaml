@@ -18,8 +18,10 @@ MV: # Volume like 40 405 41 415 ^etc:
     - 000
     - 98
   UP:
+    ^noquery: true
     ^name: "volume_up"
-  DOWN: 
+  DOWN:
+    ^noquery: true
     ^name: "volume_down"
 ECO:
   AUTO:
@@ -393,38 +395,6 @@ Z2:
     - 99
   ^function: volume
   ^zero: 80
-  SOURCE:
-  PHONO:
-  CD:
-  TUNER:
-  DVD:
-  BD: blu-ray
-  TV:
-  SAT/CBL:
-  DVR:
-  GAME:
-  GAME2:
-  V.AUX:
-  DOCK:
-  HDRADIO:
-  IPOD:
-  RHAPSODY:
-  NAPSTER:
-  PANDORA:
-  LASTFM:
-  FLICKR:
-  FAVORITES:
-  IRADIO:
-  SERVER:
-  USB DIRECT:
-  IPOD DIRECT:
-  USB:
-  IPD:
-  QUICK1:
-  QUICK2:
-  QUICK3:
-  QUICK4:
-  QUICK5:
   "ON": true
   "OFF": false
 Z2UP:
@@ -478,38 +448,6 @@ Z3:
     - 99
   ^function: volume
   ^zero: 80
-  SOURCE:
-  PHONO:
-  CD:
-  TUNER:
-  DVD:
-  BD: blu-ray
-  TV:
-  SAT/CBL:
-  DVR:
-  GAME:
-  GAME2:
-  V.AUX:
-  DOCK:
-  HDRADIO:
-  IPOD:
-  RHAPSODY:
-  NAPSTER:
-  PANDORA:
-  LASTFM:
-  FLICKR:
-  FAVORITES:
-  IRADIO:
-  SERVER:
-  USB DIRECT:
-  IPOD DIRECT:
-  USB:
-  IPD:
-  QUICK1:
-  QUICK2:
-  QUICK3:
-  QUICK4:
-  QUICK5:
   "ON": true
   "OFF": false
 Z3UP:
