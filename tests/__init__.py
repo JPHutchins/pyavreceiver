@@ -38,10 +38,16 @@ class GenericTelnetConnection(TelnetConnection):
             message = msg.decode()[:-1]
             self._last_activity = datetime.utcnow()
             resp = message
-            self._handle_event(resp)
+            # self._handle_event(resp)
 
             # Check if this is a response to a previous command
-            if commands := self._expected_responses.get(resp.command):
-                commands.popleft()
-                if not commands:
-                    del commands
+            if commands := self._expected_responses.get(resp):
+                try:
+                    _, response = commands.popitem(last=False)
+                    response.set("OK!")
+                    if not commands:
+                        del commands
+                # pylint: disable=broad-except
+                except Exception as err:
+                    print("handler exception")
+                    print(err)
