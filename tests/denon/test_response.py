@@ -237,6 +237,9 @@ def test_zones(command_dict):
     assert DenonMessage("Z2PHONO", command_dict).state_update == {
         "zone2_source": "PHONO"
     }
+    assert DenonMessage("Z2SOURCE", command_dict).state_update == {
+        "zone2_source": "SOURCE"
+    }
 
     assert DenonMessage("Z360", command_dict).state_update == {"zone3_volume": -20}
     assert DenonMessage("Z3OFF", command_dict).state_update == {"zone3_power": False}
