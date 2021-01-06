@@ -80,16 +80,18 @@ ATTR_ZONE3_SOURCE = "zone3_source"
 VAL_DOWN = "down"
 VAL_UP = "up"
 
+ZONE_PREFIX_MAP = {
+    "main": ["zone1_", "zone1", "z1", "Z1"],
+    "zone2": ["zone2_", "zone2", "z2", "Z2"],
+    "zone3": ["zone3_", "zone3", "z3", "Z3"],
+    "zone4": ["zone4_", "zone4", "z4", "Z4"],
+}
+
 ZONE_PREFIX = {
     "main": "",
-    "zone1": "",
-    "zone_1": "",
     "zone2": "zone2_",
-    "zone_2": "zone2_",
     "zone3": "zone3_",
-    "zone_3": "zone3_",
     "zone4": "zone4_",
-    "zone_4": "zone4_",
 }
 
 FUNCTION_VOLUME = "volume"
