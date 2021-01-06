@@ -76,6 +76,7 @@ class TelnetCommand(Command, ABC):
         "_message",
         "_qos",
         "_sequence",
+        "_retries",
     )
 
     def __init__(
@@ -104,7 +105,7 @@ class TelnetCommand(Command, ABC):
         self._message = message
         self._qos = qos
         self._sequence = sequence
-        self._retries = [0, 1, 2, 2, 2][qos]
+        self._retries = [0, 1, 2, 2, 2][qos]  # qos defines number of retries
 
     def __hash__(self):
         return self._sequence
@@ -122,6 +123,10 @@ class TelnetCommand(Command, ABC):
     @abstractmethod
     def set_query(self, qos: int = None) -> str:
         """Format the command with query and return."""
+
+    def init_values(self, values: CommandValues) -> None:
+        """Init the values attribite with values."""
+        self._values = values
 
     def set_sequence(self, sequence) -> None:
         """Set the sequence to use as hash and id."""
