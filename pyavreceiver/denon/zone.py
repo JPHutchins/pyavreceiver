@@ -9,7 +9,7 @@ class DenonAuxZone(Zone):
     @property
     def source_list(self):
         """Return a list of available input sources."""
-        sources = [k for k, v in self.avr.sources.keys() if v is not None]
+        sources = [k for k, v in self.avr.sources.items() if v is not None]
         sources.append(denon_const.SOURCE_FOLLOW)
         return sources
 
