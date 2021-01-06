@@ -36,7 +36,6 @@ class TelnetConnection(ABC):
         self._avr = avr
         self.host = host
         self.port = port
-        self.commands = None
         self._command_dict = {}
         self._command_lookup = {}
         self._command_timeout = const.DEFAULT_TELNET_TIMEOUT
@@ -298,6 +297,11 @@ class TelnetConnection(ABC):
             _LOGGER.debug("No expected response matched: %s", resp.command)
 
     @property
+    def commands(self) -> dict:
+        """Get the dict of commands."""
+        return self._command_lookup
+
+    @property
     def state(self) -> str:
         """Get the current state of the connection."""
         return self._state
@@ -351,9 +355,7 @@ class ExpectedResponse:
         """Wait until timeout has expired and remove expected response."""
         # pylint: disable=protected-access
         await asyncio.sleep(const.DEFAULT_COMMAND_EXPIRATION)
-        await self._connection._expected_responses.cancel_expected_response(
-            self._command
-        )
+        self.set(None)
 
     async def wait(self) -> str:
         """Wait until the event is set."""
@@ -393,22 +395,19 @@ class ExpectedResponse:
             # pylint: disable=protected-access
             status, cancel = self._connection._command_queue.push(self._command)
             if status == const.QUEUE_FAILED:
-                # A new command was sent, set response to trigger on resolution of new command
-                # This happens when a user reissues the command before it has resolved
-                # This is overwriting the reference to "self" in expected_responses
+                # A resend at higher qos was already sent
+                # This shouldn't happen
                 self._connection._expected_responses[
                     self._command
                 ] = self._connection._expected_responses[cancel]
             if status == const.QUEUE_CANCEL:
                 # The resend will overwrite a queued command, set that commands response to
                 # trigger on resolution of this command
-                # This shouldn't really happen - see PriorityQueue.push()
                 self._connection._expected_responses[cancel] = self
                 _LOGGER.debug("QoS requeueing command: %s", self._command.message)
             if status == const.QUEUE_NO_CANCEL:
                 # The resend is treated as if it is the original command
                 _LOGGER.debug("QoS requeueing command: %s", self._command.message)
-                pass
         else:
             _LOGGER.debug(
                 "Command %s failed after %s attempts",
