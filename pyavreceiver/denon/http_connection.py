@@ -153,10 +153,10 @@ class DenonHTTPApi(HTTPConnection):
         self._device_info[const.INFO_SERIAL] = self._device_info.get(
             const.INFO_SERIAL
         ) or get_text(root, f"*/{xmlns}serialNumber")
-        self._device_info[const.INFO_ZONES] = (
+        self._device_info[const.INFO_ZONES] = int(
             self._device_info.get(const.INFO_ZONES)
             or get_text(root, "DeviceZones")
-            or "0"
+            or "1"
         )
         self._device_info[const.INFO_MANUFACTURER] = self._device_info.get(
             const.INFO_MANUFACTURER
