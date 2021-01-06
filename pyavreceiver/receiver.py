@@ -1,9 +1,9 @@
 """Define an audio/video receiver."""
 from collections import defaultdict
-from typing import Optional
+from typing import Dict, Optional
 
 from pyavreceiver import const
-from pyavreceiver.command import CommandValues
+from pyavreceiver.command import Command, CommandValues
 from pyavreceiver.dispatch import Dispatcher
 from pyavreceiver.telnet_connection import TelnetConnection
 from pyavreceiver.zone import Zone
@@ -29,6 +29,7 @@ class AVReceiver:
         """Init the device."""
         self._host = host
         self._connection = None  # type: TelnetConnection
+        self._device_info = {}
         self._dispatcher = dispatcher
         self._telnet = telnet
         self._http = http
@@ -38,11 +39,9 @@ class AVReceiver:
         self._state = defaultdict()
         self._sources = None  # type: dict
         self._main_zone = None  # type: Zone
+        self._zone2, self._zone3, self._zone4 = None, None, None
         self._main_zone_class = main_zone
         self._aux_zone_class = aux_zone
-        self._model_name = None
-        self._mac_address = None
-        self._zones = None
 
     async def init(
         self,
@@ -51,18 +50,22 @@ class AVReceiver:
         reconnect_delay: float = const.DEFAULT_RECONNECT_DELAY,
     ):
         """Await the initialization of the device."""
-        if self._http and self._http_connection:
-            await self.update_device_info()
         disconnect = await self._connection.init(
             auto_reconnect=auto_reconnect, reconnect_delay=reconnect_delay
         )
         self._connections.append(disconnect)
-        self._main_zone = self._main_zone_class(self)
-        # pylint: disable=protected-access
         if self._sources:
-            self._connection._command_lookup[const.ATTR_SOURCE]._values = CommandValues(
-                self._sources
-            )
+            self.commands[const.ATTR_SOURCE].init_values(CommandValues(self._sources))
+        if self._http and self._http_connection:
+            await self.update_device_info()
+        if self.zones >= 1:
+            self._main_zone = self._main_zone_class(self)
+        if self.zones >= 2:
+            self._zone2 = self._aux_zone_class(self, zone="zone2")
+        if self.zones >= 3:
+            self._zone3 = self._aux_zone_class(self, zone="zone3")
+        if self.zones >= 4:
+            self._zone4 = self._aux_zone_class(self, zone="zone4")
 
     async def connect(
         self,
@@ -94,18 +97,18 @@ class AVReceiver:
 
     async def update_device_info(self):
         """Update information about the A/V Receiver."""
-        info = await self._http_connection.get_device_info()
-        self._model_name = info.get(const.INFO_MODEL)
-        self._mac_address = info.get(const.INFO_MAC)
-        self._zones = info.get(const.INFO_ZONES)
-
-        sources = await self._http_connection.get_source_names()
-        self._sources = sources
+        self._device_info = await self._http_connection.get_device_info()
+        self._sources = await self._http_connection.get_source_names()
 
     @property
     def dispatcher(self) -> Dispatcher:
         """Get the dispatcher instance."""
         return self._dispatcher
+
+    @property
+    def commands(self) -> Dict[str, Command]:
+        """Get the dict of commands."""
+        return self._connection.commands
 
     @property
     def connection_state(self) -> str:
@@ -118,9 +121,24 @@ class AVReceiver:
         return self._host
 
     @property
+    def friendly_name(self) -> str:
+        """Get the friendly name."""
+        return self._device_info.get(const.INFO_FRIENDLY_NAME)
+
+    @property
     def mac(self) -> str:
         """Get the MAC address."""
-        return self._mac_address
+        return self._device_info.get(const.INFO_MAC)
+
+    @property
+    def manufacturer(self) -> str:
+        """Get the manufacturer."""
+        return self._device_info.get(const.INFO_MANUFACTURER)
+
+    @property
+    def model(self) -> str:
+        """Get the model."""
+        return self._device_info.get(const.INFO_MODEL)
 
     @property
     def main(self) -> Zone:
@@ -128,9 +146,9 @@ class AVReceiver:
         return self._main_zone
 
     @property
-    def model(self) -> str:
-        """Get the model."""
-        return self._model_name
+    def serial_number(self) -> str:
+        """Get the serial number."""
+        return self._device_info.get(const.INFO_SERIAL)
 
     @property
     def sources(self) -> dict:
@@ -151,6 +169,26 @@ class AVReceiver:
     def power(self) -> str:
         """The state of power."""
         return self.state.get(const.ATTR_POWER)
+
+    @property
+    def zone2(self) -> Zone:
+        """Get the Zone 2 object."""
+        return self._zone2
+
+    @property
+    def zone3(self) -> Zone:
+        """Get the Zone 3 object."""
+        return self._zone3
+
+    @property
+    def zone4(self) -> Zone:
+        """Get the Zone 4 object."""
+        return self._zone4
+
+    @property
+    def zones(self) -> int:
+        """Get the number of zones."""
+        return self._device_info.get(const.INFO_ZONES)
 
     def set_power(self, val: bool) -> bool:
         """Request the receiver set power to val."""
