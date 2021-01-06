@@ -1,18 +1,11 @@
 """Define the interface of an A/V Receiver Zone."""
+import asyncio
 from abc import ABC, abstractmethod
-from typing import Coroutine, Sequence, Union
+from functools import partial
+from typing import Callable, Coroutine, Dict, Sequence, Union
 
 from pyavreceiver import const
-
-
-def filter_zones(item: tuple) -> bool:
-    """Return true for main zone."""
-    name, _ = item
-    prefix = ["Z2", "Z3", const.ZONE_PREFIX["zone2"], const.ZONE_PREFIX["zone3"]]
-    for pre in prefix:
-        if name.startswith(pre):
-            return False
-    return True
+from pyavreceiver.command import Command
 
 
 class Zone(ABC):
@@ -22,17 +15,15 @@ class Zone(ABC):
         """Init the zone."""
         self._avr = avr
         self._zone_prefix = const.ZONE_PREFIX[zone.lower()]
-        self._commands = dict(
-            filter(filter_zones, avr._connection._command_lookup.items())
-        )  # type: dict
+        self._filter_func = define_filter(zone)
+        self._commands = dict(filter(self._filter_func, avr.commands.items()))
 
     def get(self, name: str) -> str:
-        """Get the current state of the nameibute name."""
-        return self._avr.state.get(self._zone_prefix + name)
+        """Get the current state of the attribute name."""
+        return self.state.get(self._zone_prefix + name)
 
     def set(self, name: str, val=None, qos=0) -> Union[Coroutine, bool]:
         """Request the receiver set the name to val."""
-        # pylint: disable=protected-access
         if qos == 0:
             command = self.commands[f"{self._zone_prefix}{name}"].set_val(val)
             self.telnet_connection.send_command(command)
@@ -42,19 +33,30 @@ class Zone(ABC):
 
     def update(self, name: str) -> Coroutine:
         """Request the receiver to send update of the value of name."""
-        # pylint: disable=protected-access
-        command = self.commands[name].set_query(qos=0)
+        command = self.commands[name].set_query(qos=1)
         return self.telnet_connection.async_send_command(command)
 
     async def update_all(self):
         """Update all known attributes in commands."""
+        tasks = []
         for name in self.commands:
-            await self.update(name)
+            tasks.append(self.update(name))
+        await asyncio.gather(*tasks)
 
     @property
     def avr(self):
         """Return the AVReceiver instance."""
         return self._avr
+
+    @property
+    def commands(self) -> Dict[str, Command]:
+        """Get the commands for this zone."""
+        return self._commands
+
+    @property
+    def state(self) -> dict:
+        """Get the state of this zone."""
+        return dict(filter(self._filter_func, self._avr.state.items()))
 
     @property
     def telnet_connection(self):
@@ -70,11 +72,6 @@ class Zone(ABC):
     @abstractmethod
     def source_list(self) -> Sequence[str]:
         """Return a list of available input sources."""
-
-    @property
-    def commands(self) -> dict:
-        """The dictionary of available commands."""
-        return self._commands
 
     @property
     def bass(self) -> int:
@@ -102,11 +99,11 @@ class Zone(ABC):
     @property
     def power(self) -> str:
         """The state of zone power."""
-        return self.get(const.ATTR_ZONE1_POWER)
+        return self.get(const.ATTR_POWER)
 
     def set_power(self, val: bool) -> Coroutine:
         """Request the receiver set zone power to val."""
-        return self.set(const.ATTR_ZONE1_POWER, val, 3)
+        return self.set(const.ATTR_POWER, val, 3)
 
     @property
     def source(self) -> str:
@@ -198,6 +195,15 @@ class MainZone(Zone):
         return self.set(const.ATTR_META_DRC, val)
 
     @property
+    def power(self) -> str:
+        """The state of zone power."""
+        return self.get(const.ATTR_ZONE1_POWER)
+
+    def set_power(self, val: bool) -> Coroutine:
+        """Request the receiver set zone power to val."""
+        return self.set(const.ATTR_ZONE1_POWER, val, 3)
+
+    @property
     def soundmode(self) -> str:
         """The state of soundmode."""
         return self.get(const.ATTR_SOUND_MODE)
@@ -232,3 +238,31 @@ class MainZone(Zone):
     def set_tone_control(self, val: bool) -> bool:
         """Request the receiver set the treble to val."""
         return self.set(const.ATTR_TONE_CONTROL, val)
+
+
+def filter_zones(item, correct_prefixes, wrong_prefixes, zone) -> bool:
+    """Return true for item in zone."""
+    name, _ = item
+    for pre in wrong_prefixes:
+        if name.startswith(pre):
+            return False
+    for pre in correct_prefixes:
+        if name.startswith(pre):
+            return True
+    return zone == "main"  # Main zone default - anything not matched is main
+
+
+def define_filter(zone) -> Callable:
+    """Define the filter function."""
+    wrong_prefixes, correct_prefixes = [], []
+    for zone_name, prefix_list in const.ZONE_PREFIX_MAP.items():
+        if zone_name != zone:
+            wrong_prefixes.extend(prefix_list)
+        else:
+            correct_prefixes = prefix_list
+    return partial(
+        filter_zones,
+        correct_prefixes=correct_prefixes,
+        wrong_prefixes=wrong_prefixes,
+        zone=zone,
+    )
