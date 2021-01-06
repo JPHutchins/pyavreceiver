@@ -1,13 +1,15 @@
 """Define constants."""
 
 __title__ = "pyavreceiver"
-__version__ = "0.0.6"
+__version__ = "0.0.8"
 
 
 CLI_PORT = 23
+DEFAULT_COMMAND_EXPIRATION = 10
+DEFAULT_TELNET_TIMEOUT = 0.25  # 250ms
 DEFAULT_TIMEOUT = 10.0
 DEFAULT_RECONNECT_DELAY = 10.0
-DEFAULT_HEART_BEAT = 11.0
+DEFAULT_HEART_BEAT = 10.0
 DEFAULT_STEP = 5
 
 STATE_CONNECTED = "connected"
@@ -33,16 +35,19 @@ EVENT_TELNET = "telnet"
 EVENT_DISCONNECTED = "disconnected"
 EVENT_CONNECTED = "connected"
 
-SIGNAL_STATE_UPDATE = "state_update"
 SIGNAL_TELNET_EVENT = "telnet_event"
 SIGNAL_STATE_UPDATE = "state_update"
 
+QUEUE_CANCEL = "queue_cancel"
+QUEUE_FAILED = "queue_failed"
+QUEUE_NO_CANCEL = "queue_no_cancel"
 
 ATTR_POWER = "power"
 ATTR_VOLUME = "volume"
 ATTR_VOLUME_UP = "volume_up"
 ATTR_VOLUME_DOWN = "volume_down"
 ATTR_LFE_LEVEL = "lfe_level"
+ATTR_MAX_VOLUME = "max_volume"
 ATTR_MUTE = "mute"
 ATTR_SOURCE = "source"
 ATTR_SOUND_MODE = "sound_mode"
@@ -75,24 +80,28 @@ ATTR_ZONE3_SOURCE = "zone3_source"
 VAL_DOWN = "down"
 VAL_UP = "up"
 
+ZONE_PREFIX_MAP = {
+    "main": ["zone1_", "zone1", "z1", "Z1"],
+    "zone2": ["zone2_", "zone2", "z2", "Z2"],
+    "zone3": ["zone3_", "zone3", "z3", "Z3"],
+    "zone4": ["zone4_", "zone4", "z4", "Z4"],
+}
+
 ZONE_PREFIX = {
     "main": "",
-    "zone1": "",
-    "zone_1": "",
     "zone2": "zone2_",
-    "zone_2": "zone2_",
     "zone3": "zone3_",
-    "zone_3": "zone3_",
     "zone4": "zone4_",
-    "zone_4": "zone4_",
 }
 
 FUNCTION_VOLUME = "volume"
 FUNCTION_NUM_TO_DB = "num_to_db"
 FUNCTION_DB_TO_NUM = "db_to_num"
 
+INFO_FRIENDLY_NAME = "friendly_name"
 INFO_MODEL = "model_name"
 INFO_MAC = "mac_address"
+INFO_MANUFACTURER = "manufacturer"
 INFO_ZONES = "zones"
 INFO_SERIAL = "serial_number"
 

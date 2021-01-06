@@ -1,5 +1,6 @@
 """Define Denon/Marantz commands."""
 from collections import defaultdict
+from typing import Union
 
 import pyavreceiver.denon.const as denon_const
 from pyavreceiver import const
@@ -10,8 +11,13 @@ from pyavreceiver.denon.parse import parse
 class DenonTelnetCommand(TelnetCommand):
     """Representation of a Denon telnet message command."""
 
-    def set_val(self, val=None) -> str:
+    def set_val(
+        self, val: Union[int, float, str] = None, qos: int = None, sequence: int = -1
+    ) -> TelnetCommand:
         """Format the command with argument and return."""
+
+        qos = qos or self._qos
+
         if val is not None:
             val = (
                 self._values.get(bool(val))
@@ -42,10 +48,14 @@ class DenonTelnetCommand(TelnetCommand):
             val=val,
             message=message,
             valid_strings=self._valid_strings,
+            qos=qos,
+            sequence=sequence,
         )
 
-    def set_query(self) -> str:
+    def set_query(self, qos: int = None) -> TelnetCommand:
         """Format the command with query and return."""
+        if qos is None:
+            qos = 0
         message = (
             f"{self._command}{self._val_pfx}{denon_const.TELNET_QUERY}"
             f"{denon_const.TELNET_SEPARATOR}"
@@ -60,34 +70,8 @@ class DenonTelnetCommand(TelnetCommand):
             val=denon_const.TELNET_QUERY,
             message=message,
             valid_strings=self._valid_strings,
+            qos=qos,
         )
-
-    @property
-    def command(self) -> str:
-        """The command portion of the message."""
-        return self._command
-
-    @property
-    def message(self) -> str:
-        """The complete message; command + argument."""
-        if not self._message:
-            raise Exception
-        return self._message
-
-    @property
-    def name(self) -> str:
-        """The name of the command."""
-        return self._name
-
-    @property
-    def val(self) -> str:
-        """The argument of the command."""
-        return self._val
-
-    @property
-    def values(self) -> list:
-        """Return the valid argument values."""
-        return self._values
 
 
 def get_command_lookup(command_dict):

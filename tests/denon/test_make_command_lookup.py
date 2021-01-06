@@ -80,6 +80,7 @@ def test_make_command_lookup(command_dict):
     command = command_lookup[const.ATTR_LFE_LEVEL]
     assert command.values["min"] == -10
     assert command.values["max"] == 0
+    assert command.values.min == -10
 
     command = command_lookup[const.ATTR_DSP_DRC]
     assert str(command.values)
@@ -93,8 +94,8 @@ def test_make_command_lookup(command_dict):
     assert command.values["hev"] == "HEV"
     with pytest.raises(AVReceiverInvalidArgumentError):
         assert command.values.de == "HEV"
-    assert command.values.max is None
-    assert command.values["max"] is None
+        assert command.values.max is None
+        assert command.values["max"] is None
 
     command = command_lookup["audyssey_multi_eq"]
     assert str(command.values)

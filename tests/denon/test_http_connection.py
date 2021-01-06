@@ -92,7 +92,7 @@ def test_read_device_info_x_series_xml():
     api.make_device_info_dict(xml)
     assert api.device_info["model_name"] == "AVR-X1500H"
     assert api.device_info["mac_address"] == "0005CDD1F6E8"
-    assert api.device_info["zones"] == "2"
+    assert api.device_info["zones"] == 2
 
     with open("tests/denon/fixtures/Deviceinfo-X8500H.xml") as file:
         xml = file.read()
@@ -100,7 +100,7 @@ def test_read_device_info_x_series_xml():
     api.make_device_info_dict(xml)
     assert api.device_info["model_name"] == "AVC-X8500H"
     assert api.device_info["mac_address"] == "0005CDA60D0C"
-    assert api.device_info["zones"] == "3"
+    assert api.device_info["zones"] == 3
 
     with open("tests/denon/fixtures/Deviceinfo-X2000.xml") as file:
         xml = file.read()
@@ -108,7 +108,7 @@ def test_read_device_info_x_series_xml():
     api.make_device_info_dict(xml)
     assert api.device_info["model_name"] == "*AVR-X2000"
     assert api.device_info["mac_address"] == "0005CD3A0525"
-    assert api.device_info["zones"] == "2"
+    assert api.device_info["zones"] == 2
 
     with open("tests/denon/fixtures/Deviceinfo-X1100W.xml") as file:
         xml = file.read()
@@ -116,7 +116,7 @@ def test_read_device_info_x_series_xml():
     api.make_device_info_dict(xml)
     assert api.device_info["model_name"] == "*AVR-X1100W"
     assert api.device_info["mac_address"] == "0005CD49AC13"
-    assert api.device_info["zones"] == "2"
+    assert api.device_info["zones"] == 2
 
     with open("tests/denon/fixtures/Deviceinfo-SR5008.xml") as file:
         xml = file.read()
@@ -124,7 +124,7 @@ def test_read_device_info_x_series_xml():
     api.make_device_info_dict(xml)
     assert api.device_info["model_name"] == "*SR5008"
     assert api.device_info["mac_address"] == "0006781D2F2F"
-    assert api.device_info["zones"] == "2"
+    assert api.device_info["zones"] == 2
 
     with open("tests/denon/fixtures/Deviceinfo-NR1604.xml") as file:
         xml = file.read()
@@ -132,7 +132,7 @@ def test_read_device_info_x_series_xml():
     api.make_device_info_dict(xml)
     assert api.device_info["model_name"] == "*NR1604"
     assert api.device_info["mac_address"] == "0006781C2177"
-    assert api.device_info["zones"] == "2"
+    assert api.device_info["zones"] == 2
 
     with open("tests/denon/fixtures/upnp-X1500H.xml") as file:
         xml = file.read()
@@ -141,4 +141,21 @@ def test_read_device_info_x_series_xml():
     assert api.device_info["model_name"] == "Denon AVR-X1500H"
     assert api.device_info["mac_address"] is None
     assert api.device_info["serial_number"] == "AYW27181117704"
-    assert api.device_info["zones"] == "0"
+    assert api.device_info["zones"] == 1
+    assert api.device_info["manufacturer"] == "Denon"
+    assert api.device_info["friendly_name"] == "TV Speakers"
+
+    # Test parsing the info then upnp, as in the get_device_info function
+    api = DenonHTTPApi("")
+    with open("tests/denon/fixtures/Deviceinfo-X1500H.xml") as file:
+        xml = file.read()
+    api.make_device_info_dict(xml)
+    with open("tests/denon/fixtures/upnp-X1500H.xml") as file:
+        xml = file.read()
+    api.make_device_info_dict(xml)
+    assert api.device_info["model_name"] == "AVR-X1500H"
+    assert api.device_info["mac_address"] == "0005CDD1F6E8"
+    assert api.device_info["serial_number"] == "AYW27181117704"
+    assert api.device_info["zones"] == 2
+    assert api.device_info["manufacturer"] == "Denon"
+    assert api.device_info["friendly_name"] == "TV Speakers"
