@@ -40,7 +40,7 @@ async def test_command_expires(mock_telnet):
     conn = GenericTelnetConnection(FakeAvr(), "127.0.0.1")
     await conn.init()
 
-    command = GenericCommand(command="a").set_val(1, 4)
+    command = GenericCommand(command="a").set_val(1, 3)
     response = conn.async_send_command(command)
     assert await response is None
     await conn.disconnect()
@@ -53,7 +53,7 @@ async def test_cancel_tasks(mock_telnet):
     conn = GenericTelnetConnection(FakeAvr(), "127.0.0.1")
     await conn.init()
 
-    command = GenericCommand(command="a").set_val(1, 4)
+    command = GenericCommand(command="a").set_val(1, 3)
     response = conn.async_send_command(command)
     # pylint: disable=protected-access
     conn._expected_responses.cancel_tasks()
