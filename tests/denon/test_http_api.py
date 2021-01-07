@@ -1,6 +1,6 @@
 """Test getting device information via HTTP API."""
 from pyavreceiver.denon import const as denon_const
-from pyavreceiver.denon.http_connection import DenonHTTPApi
+from pyavreceiver.denon.http_api import DenonHTTPApi
 
 
 def test_get_renamed_and_deleted_sources():

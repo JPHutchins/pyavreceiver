@@ -4,11 +4,7 @@ import asyncio
 import aiohttp
 
 from pyavreceiver import const
-from pyavreceiver.denon.http_connection import (
-    DenonAVRApi,
-    DenonAVRX2016Api,
-    DenonAVRXApi,
-)
+from pyavreceiver.denon.http_api import DenonAVRApi, DenonAVRX2016Api, DenonAVRXApi
 from pyavreceiver.denon.receiver import DenonReceiver
 from pyavreceiver.error import AVReceiverIncompatibleDeviceError
 

@@ -40,10 +40,9 @@ class AVReceiver:
         self._device_info = {}
         self._sources = None  # type: dict
         self._state = defaultdict()
-        
+
         self._main_zone = None  # type: Zone
         self._zone2, self._zone3, self._zone4 = None, None, None
-        
 
     async def init(
         self,
