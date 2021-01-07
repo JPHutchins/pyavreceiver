@@ -5,6 +5,7 @@ from typing import Dict, Optional
 from pyavreceiver import const
 from pyavreceiver.command import Command, CommandValues
 from pyavreceiver.dispatch import Dispatcher
+from pyavreceiver.http_api import HTTPApi
 from pyavreceiver.telnet_connection import TelnetConnection
 from pyavreceiver.zone import Zone
 
@@ -16,32 +17,33 @@ class AVReceiver:
         self,
         host: str,
         *,
-        telnet: bool = True,
-        http: bool = True,
-        http_api=None,
-        upnp: bool = True,
-        timeout: float = const.DEFAULT_TIMEOUT,
-        heart_beat: Optional[float] = const.DEFAULT_HEART_BEAT,
         dispatcher: Dispatcher = Dispatcher(),
-        main_zone: Zone = None,
-        aux_zone: Zone = None,
+        heart_beat: Optional[float] = const.DEFAULT_HEART_BEAT,
+        http_api: HTTPApi = None,
+        telnet: bool = True,
+        timeout: float = const.DEFAULT_TIMEOUT,
+        zone_aux_class: Zone = None,
+        zone_main_class: Zone = None,
     ):
         """Init the device."""
         self._host = host
-        self._connection = None  # type: TelnetConnection
-        self._device_info = {}
         self._dispatcher = dispatcher
+        self._heart_beat = heart_beat
+        self._http_api = http_api
         self._telnet = telnet
-        self._http = http
-        self._http_connection = http_api
-        self._upnp = upnp
+        self._timeout = timeout
+        self._zone_aux_class = zone_aux_class
+        self._zone_main_class = zone_main_class
+
+        self._connection = None  # type: TelnetConnection
         self._connections = []
-        self._state = defaultdict()
+        self._device_info = {}
         self._sources = None  # type: dict
+        self._state = defaultdict()
+        
         self._main_zone = None  # type: Zone
         self._zone2, self._zone3, self._zone4 = None, None, None
-        self._main_zone_class = main_zone
-        self._aux_zone_class = aux_zone
+        
 
     async def init(
         self,
@@ -56,16 +58,16 @@ class AVReceiver:
         self._connections.append(disconnect)
         if self._sources:
             self.commands[const.ATTR_SOURCE].init_values(CommandValues(self._sources))
-        if self._http and self._http_connection:
+        if self._http_api:
             await self.update_device_info()
         if self.zones >= 1:
-            self._main_zone = self._main_zone_class(self)
+            self._main_zone = self._zone_main_class(self)
         if self.zones >= 2:
-            self._zone2 = self._aux_zone_class(self, zone="zone2")
+            self._zone2 = self._zone_aux_class(self, zone="zone2")
         if self.zones >= 3:
-            self._zone3 = self._aux_zone_class(self, zone="zone3")
+            self._zone3 = self._zone_aux_class(self, zone="zone3")
         if self.zones >= 4:
-            self._zone4 = self._aux_zone_class(self, zone="zone4")
+            self._zone4 = self._zone_aux_class(self, zone="zone4")
 
     async def connect(
         self,
@@ -97,8 +99,8 @@ class AVReceiver:
 
     async def update_device_info(self):
         """Update information about the A/V Receiver."""
-        self._device_info = await self._http_connection.get_device_info()
-        self._sources = await self._http_connection.get_source_names()
+        self._device_info = await self._http_api.get_device_info()
+        self._sources = await self._http_api.get_source_names()
 
     @property
     def dispatcher(self) -> Dispatcher:
