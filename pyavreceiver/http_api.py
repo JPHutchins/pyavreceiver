@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
 
 
-class HTTPConnection(ABC):
+class HTTPApi(ABC):
     """Define the HTTP connection interface."""
 
     def __init__(self, host: str, upnp_data=None):
