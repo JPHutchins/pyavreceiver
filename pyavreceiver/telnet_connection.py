@@ -213,7 +213,7 @@ class TelnetConnection(ABC):
             )
             return
 
-        _LOGGER.debug("queueing command: %s", command.message)
+        _LOGGER.debug("Queueing command: %s", command.message)
         self._command_queue.push(command)
 
     def async_send_command(self, command: TelnetCommand) -> Coroutine:
