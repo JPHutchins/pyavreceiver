@@ -6,6 +6,8 @@ __version__ = "0.0.8"
 
 CLI_PORT = 23
 DEFAULT_COMMAND_EXPIRATION = 10
+DEFAULT_MESSAGE_INTERVAL_LIMIT = 0.05  # 50ms
+DEFAULT_QUEUE_INTERVAL = 0.002  # 2ms
 DEFAULT_TELNET_TIMEOUT = 0.25  # 250ms
 DEFAULT_TIMEOUT = 10.0
 DEFAULT_RECONNECT_DELAY = 10.0
@@ -104,8 +106,6 @@ INFO_MAC = "mac_address"
 INFO_MANUFACTURER = "manufacturer"
 INFO_ZONES = "zones"
 INFO_SERIAL = "serial_number"
-
-MESSAGE_INTERVAL_LIMIT = 50  # milliseconds
 
 UPNP_ENDPOINTS = {
     "denon-avr": ":8080/description.xml",
