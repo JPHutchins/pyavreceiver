@@ -446,15 +446,15 @@ class ExpectedResponseQueue:
         """Set item shortcut through both dicts."""
         self._queue[command.group][command] = expected_response
 
-    def get(self, command_group) -> Optional[OrderedDict]:
-        """Get the (command, response) entries for command_group, if any."""
-        return self._queue.get(command_group)
+    def get(self, group) -> Optional[OrderedDict]:
+        """Get the (command, response) entries for group, if any."""
+        return self._queue.get(group)
 
     def popmatch(
-        self, command_group
+        self, group
     ) -> Optional[Tuple[TelnetCommand, ExpectedResponse]]:
         """Pop the oldest matching expected response entry, if any."""
-        if match := self._queue.get(command_group):
+        if match := self._queue.get(group):
             try:
                 command, expected_response = match.popitem(last=False)
             except KeyError:
