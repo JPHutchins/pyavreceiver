@@ -1,6 +1,6 @@
 """Define the interface of an A/V Receiver Zone."""
 import asyncio
-from abc import ABC, abstractmethod
+from abc import ABC
 from functools import partial
 from typing import Callable, Coroutine, Dict, Sequence, Union
 
