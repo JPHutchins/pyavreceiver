@@ -450,9 +450,7 @@ class ExpectedResponseQueue:
         """Get the (command, response) entries for group, if any."""
         return self._queue.get(group)
 
-    def popmatch(
-        self, group
-    ) -> Optional[Tuple[TelnetCommand, ExpectedResponse]]:
+    def popmatch(self, group) -> Optional[Tuple[TelnetCommand, ExpectedResponse]]:
         """Pop the oldest matching expected response entry, if any."""
         if match := self._queue.get(group):
             try:

@@ -109,7 +109,7 @@ class Zone(ABC):
     def set_source(self, val: str) -> Coroutine:
         """Request the receiver set the source to val."""
         return self.set(const.ATTR_SOURCE, val, 2)
-    
+
     @property
     def source_list(self):
         """Return a list of available input sources."""
@@ -184,6 +184,15 @@ class MainZone(Zone):
     def set_lfe_level(self, val: float) -> bool:
         """Request the receiver set LFE level to val."""
         return self.set(const.ATTR_LFE_LEVEL, val)
+
+    @property
+    def meta_drc_enabled(self) -> bool:
+        """The state of metadata dynamic range control."""
+        return self.get(const.ATTR_META_DRC_ENABLED)
+
+    def set_meta_drc_enabled(self, val: bool) -> Coroutine:
+        """Request the receiver set dynamic range control to val."""
+        return self.set(const.ATTR_META_DRC_ENABLED, val, 2)
 
     @property
     def meta_dynamic_range(self) -> str:
