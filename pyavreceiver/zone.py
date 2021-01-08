@@ -2,7 +2,7 @@
 import asyncio
 import logging
 from functools import partial
-from typing import Callable, Coroutine, Dict, Sequence, Union
+from typing import Callable, Coroutine, Dict, List, Optional, Sequence, Union
 
 from pyavreceiver import const
 from pyavreceiver.command import Command
@@ -24,6 +24,12 @@ class Zone:
     def get(self, name: str) -> str:
         """Get the current state of the attribute name."""
         return self.state.get(self._zone_prefix + name)
+
+    def get_args(self, name: str) -> Optional[List[Union[str, bool]]]:
+        """Get the list of valid args for the command, if command exists."""
+        if command := self.commands.get(name):
+            return command.values
+        return None
 
     def set(self, name: str, val=None, qos=0) -> Union[Coroutine, bool]:
         """Request the receiver set the name to val."""
