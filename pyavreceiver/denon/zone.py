@@ -32,7 +32,7 @@ class DenonMainZone(MainZone):
     def set_audyssey_dynamic_eq(self, val: bool) -> Coroutine:
         """Request the receiver set Audyssey dynamic EQ to val."""
         return self.set(denon_const.ATTR_DYNAMIC_EQ, val, 2)
-    
+
     @property
     def min_volume(self) -> int:
         """The min volume."""
