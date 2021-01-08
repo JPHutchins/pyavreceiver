@@ -3,12 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Callable, Sequence, Tuple, Union
 
 from pyavreceiver.error import AVReceiverInvalidArgumentError
-
-
-def identity(arg, **kwargs):
-    """The identity function returns the input."""
-    # pylint: disable=unused-argument
-    return arg
+from pyavreceiver.functions import identity
 
 
 class CommandValues:

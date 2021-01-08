@@ -4,8 +4,9 @@ from typing import Union
 
 import pyavreceiver.denon.const as denon_const
 from pyavreceiver import const
-from pyavreceiver.command import CommandValues, TelnetCommand, identity
+from pyavreceiver.command import CommandValues, TelnetCommand
 from pyavreceiver.denon.parse import parse
+from pyavreceiver.functions import identity
 
 
 class DenonTelnetCommand(TelnetCommand):

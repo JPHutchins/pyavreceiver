@@ -10,6 +10,7 @@ import telnetlib3
 
 from pyavreceiver import const
 from pyavreceiver.command import TelnetCommand
+from pyavreceiver.functions import none
 from pyavreceiver.priority_queue import PriorityQueue
 from pyavreceiver.response import Message
 
@@ -235,7 +236,7 @@ class TelnetConnection(ABC):
             except KeyError:
                 # Can happen when a query returns multiple responses to one query
                 _LOGGER.debug("Command already resolved: %s", command.message)
-                return blank_awaitable()
+                return none()
         if status == const.QUEUE_NO_CANCEL:
             _LOGGER.debug("Command queued: %s", command.message)
             self._expected_responses[command] = ExpectedResponse(command, self)
@@ -481,8 +482,3 @@ class ExpectedResponseQueue:
             for expected_response in group.values():
                 expected_response.set(None)
         self._queue = defaultdict(OrderedDict)
-
-
-async def blank_awaitable() -> None:
-    """Awaitable that immediately resolves to None."""
-    return None
