@@ -13,7 +13,6 @@ from pyavreceiver.command import TelnetCommand
 from pyavreceiver.priority_queue import PriorityQueue
 from pyavreceiver.response import Message
 
-logging.basicConfig(level=logging.DEBUG)
 _LOGGER = logging.getLogger(__name__)
 
 # Monkey patch misbehaving repr until fixed

@@ -1,10 +1,6 @@
 """Define a request/response connection to an AV Receiver."""
-import logging
 from abc import ABC
 from collections import defaultdict
-
-logging.basicConfig(level=logging.INFO)
-_LOGGER = logging.getLogger(__name__)
 
 
 class HTTPApi(ABC):
