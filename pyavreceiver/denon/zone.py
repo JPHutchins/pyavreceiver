@@ -1,5 +1,6 @@
 """Define Denon/Marantz A/V Receiver Zones."""
 from typing import Coroutine
+
 from pyavreceiver.denon import const as denon_const
 from pyavreceiver.zone import MainZone, Zone
 
