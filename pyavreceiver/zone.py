@@ -65,6 +65,11 @@ class Zone:
         await asyncio.gather(*tasks)
 
     @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        return self.avr.connection_state == const.STATE_CONNECTED
+
+    @property
     def avr(self):
         """Return the AVReceiver instance."""
         return self._avr
@@ -83,11 +88,6 @@ class Zone:
     def telnet_connection(self):
         """Return the TelnetConnection instance."""
         return self.avr.telnet_connection
-
-    @property
-    def available(self):
-        """Return True if the device is available."""
-        return self.avr.connection_state == const.STATE_CONNECTED
 
     @property
     def bass(self) -> int:
