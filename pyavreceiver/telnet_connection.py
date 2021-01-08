@@ -242,6 +242,28 @@ class TelnetConnection(ABC):
             self._expected_responses[command] = ExpectedResponse(command, self)
             return self._expected_responses[command].wait()
 
+    def resend_command(self, expected_response: "ExpectedResponse") -> None:
+        """Resend a command that was not responded to."""
+        status, cancel = self._command_queue.push(expected_response.command)
+        if status == const.QUEUE_FAILED:
+            # A resend at higher qos was already sent
+            # This shouldn't happen
+            self._expected_responses[
+                expected_response.command
+            ] = self._expected_responses[cancel]
+        if status == const.QUEUE_CANCEL:
+            # The resend will overwrite a queued command, set that commands response to
+            # trigger on resolution of this command
+            self._expected_responses[cancel] = self
+            _LOGGER.debug(
+                "QoS requeueing command: %s", expected_response.command.message
+            )
+        if status == const.QUEUE_NO_CANCEL:
+            # The resend is treated as if it is the original command
+            _LOGGER.debug(
+                "QoS requeueing command: %s", expected_response.command.message
+            )
+
     async def _process_command_queue(self):
         while True:
             wait_time = const.DEFAULT_QUEUE_INTERVAL
@@ -393,22 +415,7 @@ class ExpectedResponse:
     async def _resend_command(self) -> None:
         await asyncio.sleep(self._command_timeout)
         if self._attempts <= self._command.retries:
-            # pylint: disable=protected-access
-            status, cancel = self._connection._command_queue.push(self._command)
-            if status == const.QUEUE_FAILED:
-                # A resend at higher qos was already sent
-                # This shouldn't happen
-                self._connection._expected_responses[
-                    self._command
-                ] = self._connection._expected_responses[cancel]
-            if status == const.QUEUE_CANCEL:
-                # The resend will overwrite a queued command, set that commands response to
-                # trigger on resolution of this command
-                self._connection._expected_responses[cancel] = self
-                _LOGGER.debug("QoS requeueing command: %s", self._command.message)
-            if status == const.QUEUE_NO_CANCEL:
-                # The resend is treated as if it is the original command
-                _LOGGER.debug("QoS requeueing command: %s", self._command.message)
+            self._connection.resend_command(self)
         else:
             _LOGGER.debug(
                 "Command %s failed after %s attempts",
@@ -418,9 +425,9 @@ class ExpectedResponse:
             self.set(None)
 
     @property
-    def command(self) -> int:
+    def command(self) -> TelnetCommand:
         """Get the command that represents this event."""
-        return self._command.command
+        return self._command
 
 
 class ExpectedResponseQueue:
