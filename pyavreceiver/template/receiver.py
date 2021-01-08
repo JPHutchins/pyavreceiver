@@ -3,7 +3,7 @@ from typing import Optional
 
 from pyavreceiver.dispatch import Dispatcher
 from pyavreceiver.receiver import AVReceiver
-from pyavreceiver.zone import Zone, MainZone
+from pyavreceiver.zone import MainZone, Zone
 
 
 class TemplateReceiver(AVReceiver):
