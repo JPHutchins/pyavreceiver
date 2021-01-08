@@ -25,6 +25,7 @@ DEVICE_INFO_ENDPOINTS = [
 ]
 
 DEVICE_INFO_SEARCH = {"model": ["ModelName", "ManualModelName"]}
+DEVICE_MIN_VOLUME = -80
 
 # Valid source on auxiliary zones that follows main zone
 SOURCE_FOLLOW = "SOURCE"
