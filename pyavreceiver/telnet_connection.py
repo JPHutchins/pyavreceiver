@@ -203,7 +203,7 @@ class TelnetConnection(ABC):
                     await self._handle_connection_error()
             await asyncio.sleep(self._heart_beat_interval / 2)
 
-    def send_command(self, command, heartbeat=False):
+    def send_command(self, command: TelnetCommand, heartbeat=False):
         """Execute a command."""
         if not heartbeat and self._state != const.STATE_CONNECTED:
             _LOGGER.debug(
@@ -213,7 +213,7 @@ class TelnetConnection(ABC):
             )
             return
 
-        _LOGGER.debug("Queueing command: %s", command.message)
+        _LOGGER.debug("Command queued: %s", command.message)
         self._command_queue.push(command)
 
     def async_send_command(self, command: TelnetCommand) -> Coroutine:
