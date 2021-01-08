@@ -73,9 +73,9 @@ class Zone(ABC):
         """The state of bass."""
         return self.get(const.ATTR_BASS)
 
-    def set_bass(self, val: float) -> Coroutine:
+    def set_bass(self, val: float) -> bool:
         """Request the receiver set the bass to val."""
-        return self.set(const.ATTR_BASS, val, 1)
+        return self.set(const.ATTR_BASS, val)
 
     @property
     def max_volume(self) -> int:
@@ -120,9 +120,9 @@ class Zone(ABC):
         """The state of treble."""
         return self.get(const.ATTR_TREBLE)
 
-    def set_treble(self, val: float) -> Coroutine:
+    def set_treble(self, val: float) -> bool:
         """Request the receiver set the treble to val."""
-        return self.set(const.ATTR_TREBLE, val, 1)
+        return self.set(const.ATTR_TREBLE, val)
 
     @property
     def volume(self) -> str:
@@ -163,27 +163,27 @@ class MainZone(Zone):
         """The state of DSP dynamic range."""
         return self.get(const.ATTR_DSP_DRC)
 
-    def set_dsp_dynamic_range(self, val) -> bool:
+    def set_dsp_dynamic_range(self, val) -> Coroutine:
         """Request the receiver set the DRC to val."""
-        return self.set(const.ATTR_DSP_DRC, val)
+        return self.set(const.ATTR_DSP_DRC, val, 2)
 
     @property
     def dsp_mode(self) -> str:
         """The state of DSP mode."""
         return self.get(const.ATTR_DSP_MODE)
 
-    def set_dsp_mode(self, val: str) -> bool:
+    def set_dsp_mode(self, val: str) -> Coroutine:
         """Request the receiver set DSP mode to val."""
-        return self.set(const.ATTR_DSP_MODE, val)
+        return self.set(const.ATTR_DSP_MODE, val, 2)
 
     @property
     def lfe_level(self) -> str:
         """The state of LFE level."""
         return self.get(const.ATTR_LFE_LEVEL)
 
-    def set_lfe_level(self, val: float) -> bool:
+    def set_lfe_level(self, val: float) -> Coroutine:
         """Request the receiver set LFE level to val."""
-        return self.set(const.ATTR_LFE_LEVEL, val)
+        return self.set(const.ATTR_LFE_LEVEL, val, 2)
 
     @property
     def meta_drc_enabled(self) -> bool:
@@ -199,9 +199,9 @@ class MainZone(Zone):
         """The state of metadata dynamic range control."""
         return self.get(const.ATTR_META_DRC)
 
-    def set_meta_dynamic_range(self, val: str) -> bool:
+    def set_meta_dynamic_range(self, val: str) -> Coroutine:
         """Request the receiver set meta DRC to val."""
-        return self.set(const.ATTR_META_DRC, val)
+        return self.set(const.ATTR_META_DRC, val, 1)
 
     @property
     def power(self) -> str:
@@ -217,9 +217,9 @@ class MainZone(Zone):
         """The state of soundmode."""
         return self.get(const.ATTR_SOUND_MODE)
 
-    def set_soundmode(self, val: str) -> bool:
+    def set_soundmode(self, val: str) -> Coroutine:
         """Request the receiver set the sound mode to val."""
-        return self.set(const.ATTR_SOUND_MODE, val.lower())
+        return self.set(const.ATTR_SOUND_MODE, val.lower(), 2)
 
     @property
     def sound_mode_list(self) -> Sequence[str]:
@@ -235,18 +235,18 @@ class MainZone(Zone):
         """The state of subwoofer one."""
         return self.get(const.ATTR_SUBWOOFER_ONE)
 
-    def set_subwoofer_one(self, val: bool) -> bool:
+    def set_subwoofer_one(self, val: bool) -> Coroutine:
         """Request the receiver set subwoofer one to val."""
-        return self.set(const.ATTR_SUBWOOFER_ONE, val)
+        return self.set(const.ATTR_SUBWOOFER_ONE, val, 2)
 
     @property
     def tone_control(self) -> str:
         """The state of tone control."""
         return self.get(const.ATTR_TONE_CONTROL)
 
-    def set_tone_control(self, val: bool) -> bool:
+    def set_tone_control(self, val: bool) -> Coroutine:
         """Request the receiver set the treble to val."""
-        return self.set(const.ATTR_TONE_CONTROL, val)
+        return self.set(const.ATTR_TONE_CONTROL, val, 2)
 
 
 def filter_zones(item, correct_prefixes, wrong_prefixes, zone) -> bool:

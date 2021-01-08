@@ -1,4 +1,5 @@
 """Define Denon/Marantz A/V Receiver Zones."""
+from typing import Coroutine
 from pyavreceiver.denon import const as denon_const
 from pyavreceiver.zone import MainZone, Zone
 
@@ -22,6 +23,6 @@ class DenonMainZone(MainZone):
         """The state of Audyssey dynamic EQ."""
         return self.get(denon_const.ATTR_DYNAMIC_EQ)
 
-    def set_audyssey_dynamic_eq(self, val: bool) -> bool:
+    def set_audyssey_dynamic_eq(self, val: bool) -> Coroutine:
         """Request the receiver set Audyssey dynamic EQ to val."""
-        return self.set(denon_const.ATTR_DYNAMIC_EQ, val)
+        return self.set(denon_const.ATTR_DYNAMIC_EQ, val, 2)
