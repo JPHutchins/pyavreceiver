@@ -65,7 +65,11 @@ MAP_HTTP_SOURCE_NAME_TO_TELNET = {
 
 TELNET_QUERY = "?"
 
+ATTR_CINEMA_EQ = "cinema_eq"
+ATTR_DSX = "audyssey_dsx"
 ATTR_DYNAMIC_EQ = "audyssey_dynamic_eq"
+ATTR_MULTI_EQ = "audyssey_multi_eq"
+ATTR_REFLEV_OFFSET = "audyssey_reference_level_offset"
 
 XML_MODEL_NAME = "ModelName"
 XML_MAC_ADDRESS = "MacAddress"

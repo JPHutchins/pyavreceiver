@@ -225,6 +225,7 @@ PS:
     "OFF": false
     ESMTRX:
   CINEMA EQ.:
+    ^name: cinema_eq
     "ON": true
     "OFF": false
   "MODE:":
@@ -295,6 +296,7 @@ PS:
     LIT: low
     "OFF": false
   DSX:
+    ^name: "audyssey_dsx"
     "ON": true
     "OFF": false
   STW:
