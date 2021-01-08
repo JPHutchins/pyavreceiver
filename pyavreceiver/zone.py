@@ -1,10 +1,14 @@
 """Define the interface of an A/V Receiver Zone."""
 import asyncio
+import logging
 from functools import partial
 from typing import Callable, Coroutine, Dict, Sequence, Union
 
 from pyavreceiver import const
 from pyavreceiver.command import Command
+from pyavreceiver.functions import none
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class Zone:
@@ -24,10 +28,28 @@ class Zone:
     def set(self, name: str, val=None, qos=0) -> Union[Coroutine, bool]:
         """Request the receiver set the name to val."""
         if qos == 0:
-            command = self.commands[f"{self._zone_prefix}{name}"].set_val(val)
+            try:
+                command = self.commands[self._zone_prefix + name].set_val(val)
+            except KeyError:
+                _LOGGER.debug(
+                    "KeyError: command %s%s does not exist in %s",
+                    self._zone_prefix,
+                    name,
+                    self.commands,
+                )
+                return None
             self.telnet_connection.send_command(command)
             return True
-        command = self.commands[f"{self._zone_prefix}{name}"].set_val(val, qos=qos)
+        try:
+            command = self.commands[self._zone_prefix + name].set_val(val, qos=qos)
+        except KeyError:
+            _LOGGER.debug(
+                "KeyError: command %s%s does not exist in %s",
+                self._zone_prefix,
+                name,
+                self.commands,
+            )
+            return none()
         return self.telnet_connection.async_send_command(command)
 
     def update(self, name: str) -> Coroutine:
