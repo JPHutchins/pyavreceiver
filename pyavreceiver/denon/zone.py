@@ -25,8 +25,3 @@ class DenonMainZone(MainZone):
     def set_audyssey_dynamic_eq(self, val: bool) -> bool:
         """Request the receiver set Audyssey dynamic EQ to val."""
         return self.set(denon_const.ATTR_DYNAMIC_EQ, val)
-
-    @property
-    def source_list(self):
-        """Return a list of available input sources."""
-        return [k for k, v in self.avr.sources.items() if v is not None]

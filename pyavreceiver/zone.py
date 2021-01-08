@@ -69,11 +69,6 @@ class Zone(ABC):
         return self.avr.connection_state == const.STATE_CONNECTED
 
     @property
-    @abstractmethod
-    def source_list(self) -> Sequence[str]:
-        """Return a list of available input sources."""
-
-    @property
     def bass(self) -> int:
         """The state of bass."""
         return self.get(const.ATTR_BASS)
@@ -114,6 +109,11 @@ class Zone(ABC):
     def set_source(self, val: str) -> Coroutine:
         """Request the receiver set the source to val."""
         return self.set(const.ATTR_SOURCE, val, 2)
+    
+    @property
+    def source_list(self):
+        """Return a list of available input sources."""
+        return [k for k, v in self.avr.sources.items() if v is not None]
 
     @property
     def treble(self) -> int:
