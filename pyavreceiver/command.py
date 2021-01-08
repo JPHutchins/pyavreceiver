@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from typing import Callable, List, Sequence, Tuple, Union
 
+from pyavreceiver import const
 from pyavreceiver.error import AVReceiverInvalidArgumentError
 from pyavreceiver.functions import identity
 
@@ -108,7 +109,7 @@ class TelnetCommand(Command, ABC):
         self._message = message
         self._qos = qos
         self._sequence = sequence
-        self._retries = [0, 1, 2, 2, 2][qos]  # qos defines number of retries
+        self._retries = const.DEFAULT_RETRY_SCHEMA[qos]  # qos defines number of retries
 
     def __hash__(self):
         return self._sequence

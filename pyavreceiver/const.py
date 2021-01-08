@@ -13,6 +13,7 @@ DEFAULT_TIMEOUT = 10.0
 DEFAULT_RECONNECT_DELAY = 10.0
 DEFAULT_HEART_BEAT = 10.0
 DEFAULT_STEP = 5
+DEFAULT_RETRY_SCHEMA = [0, 1, 2, 2, 2]  # number of retry attempts indexed by QoS level
 
 STATE_CONNECTED = "connected"
 STATE_DISCONNECTED = "disconnected"
