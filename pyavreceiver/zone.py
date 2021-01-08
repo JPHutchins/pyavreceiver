@@ -174,6 +174,15 @@ class MainZone(Zone):
     def set_dsp_mode(self, val: str) -> Coroutine:
         """Request the receiver set DSP mode to val."""
         return self.set(const.ATTR_DSP_MODE, val, 2)
+    
+    @property
+    def front_height(self) -> str:
+        """The state of front height."""
+        return self.get(const.ATTR_FRONT_HEIGHT)
+
+    def set_front_height(self, val: str) -> Coroutine:
+        """Request the receiver set front height to val."""
+        return self.set(const.ATTR_FRONT_HEIGHT, val, 2)
 
     @property
     def lfe_level(self) -> str:
@@ -237,6 +246,15 @@ class MainZone(Zone):
     def set_subwoofer_one(self, val: bool) -> Coroutine:
         """Request the receiver set subwoofer one to val."""
         return self.set(const.ATTR_SUBWOOFER_ONE, val, 2)
+    
+    @property
+    def surround_back(self) -> bool:
+        """The state of surround back."""
+        return self.get(const.ATTR_SURROUND_BACK)
+
+    def set_surround_back(self, val: bool) -> Coroutine:
+        """Request the receiver set surround back to val."""
+        return self.set(const.ATTR_SURROUND_BACK, val, 2)
 
     @property
     def tone_control(self) -> str:

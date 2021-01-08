@@ -228,7 +228,7 @@ PS:
     "ON": true
     "OFF": false
   "MODE:":
-    ^name: dsp_category
+    ^name: dsp_mode
     CINEMA:
     MUSIC:
     GAME:
@@ -246,14 +246,14 @@ PS:
     FH:
     FW:
     SB:
-    "OFF":
+    "OFF": false
   "MULTEQ:":
     ^name: audyssey_multi_eq
     AUDYSSEY:
     BYP.LR:
     FLAT:
     MANUAL:
-    "OFF":
+    "OFF": false
   DYNEQ:
     ^name: audyssey_dynamic_eq
     "ON": true
