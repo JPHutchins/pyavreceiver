@@ -25,7 +25,7 @@ class GenericCommand(TelnetCommand):
         self, val: Union[int, float, str] = None, qos: int = 0, sequence: int = -1
     ) -> TelnetCommand:
         return GenericCommand(
-            command=self._command, val=val, qos=qos, message=self._command + str(val)
+            group=self._group, val=val, qos=qos, message=self._group + str(val)
         )
 
     def set_query(self, qos=0) -> TelnetCommand:
@@ -40,7 +40,7 @@ async def test_command_expires(mock_telnet):
     conn = GenericTelnetConnection(FakeAvr(), "127.0.0.1")
     await conn.init()
 
-    command = GenericCommand(command="a").set_val(1, 3)
+    command = GenericCommand(group="a").set_val(1, 3)
     response = conn.async_send_command(command)
     assert await response is None
     await conn.disconnect()
@@ -53,7 +53,7 @@ async def test_cancel_tasks(mock_telnet):
     conn = GenericTelnetConnection(FakeAvr(), "127.0.0.1")
     await conn.init()
 
-    command = GenericCommand(command="a").set_val(1, 3)
+    command = GenericCommand(group="a").set_val(1, 3)
     response = conn.async_send_command(command)
     # pylint: disable=protected-access
     conn._expected_responses.cancel_tasks()
@@ -62,10 +62,10 @@ async def test_cancel_tasks(mock_telnet):
     assert await response is None
 
     responses = [
-        conn.async_send_command(GenericCommand(command="a").set_val(1, 3)),
-        conn.async_send_command(GenericCommand(command="b").set_val(1, 3)),
-        conn.async_send_command(GenericCommand(command="c").set_val(1, 3)),
-        conn.async_send_command(GenericCommand(command="d").set_val(1, 3)),
+        conn.async_send_command(GenericCommand(group="a").set_val(1, 3)),
+        conn.async_send_command(GenericCommand(group="b").set_val(1, 3)),
+        conn.async_send_command(GenericCommand(group="c").set_val(1, 3)),
+        conn.async_send_command(GenericCommand(group="d").set_val(1, 3)),
     ]
     conn._expected_responses.cancel_tasks()
     results = await asyncio.gather(*responses)
@@ -83,19 +83,19 @@ async def test_qos(response_in_order_telnet):
     await conn.init()
     await asyncio.sleep(1)
 
-    command = GenericCommand(command="a").set_val(1, 3)
+    command = GenericCommand(group="a").set_val(1, 3)
     response = conn.async_send_command(command)
     assert await response == "OK!"
 
-    command = GenericCommand(command="b").set_val(1, 1)
+    command = GenericCommand(group="b").set_val(1, 1)
     response = conn.async_send_command(command)
     assert await response == "OK!"
 
-    command = GenericCommand(command="c").set_val(1, 2)
+    command = GenericCommand(group="c").set_val(1, 2)
     response = conn.async_send_command(command)
     assert await response == "OK!"
 
-    command = GenericCommand(command="d").set_val(1, 1)
+    command = GenericCommand(group="d").set_val(1, 1)
     response = conn.async_send_command(command)
     assert await response == "OK!"
 
@@ -110,11 +110,11 @@ async def test_qos_slow_and_fail(slow_then_wrong_telnet):
     await conn.init()
     await asyncio.sleep(1)
 
-    command = GenericCommand(command="a").set_val(1, 3)
+    command = GenericCommand(group="a").set_val(1, 3)
     response = conn.async_send_command(command)
     assert await response == "OK!"
 
-    command = GenericCommand(command="b").set_val(1, 3)
+    command = GenericCommand(group="b").set_val(1, 3)
     assert await conn.async_send_command(command) is None
 
     await conn.disconnect()

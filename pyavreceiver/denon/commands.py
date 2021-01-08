@@ -32,15 +32,15 @@ class DenonTelnetCommand(TelnetCommand):
             except AttributeError:
                 pass
             message = (
-                f"{self._command}{self._val_pfx}"
+                f"{self._group}{self._val_pfx}"
                 f"{self._func(val, zero=self._zero, valid_strings=self._valid_strings)}"
                 f"{denon_const.TELNET_SEPARATOR}"
             )
         else:
-            message = f"{self._command}{denon_const.TELNET_SEPARATOR}"
+            message = f"{self._group}{denon_const.TELNET_SEPARATOR}"
         return DenonTelnetCommand(
             name=self._name,
-            command=self._command,
+            group=self._group,
             values=self._values,
             val_pfx=self._val_pfx,
             func=self._func,
@@ -57,12 +57,12 @@ class DenonTelnetCommand(TelnetCommand):
         if qos is None:
             qos = 0
         message = (
-            f"{self._command}{self._val_pfx}{denon_const.TELNET_QUERY}"
+            f"{self._group}{self._val_pfx}{denon_const.TELNET_QUERY}"
             f"{denon_const.TELNET_SEPARATOR}"
         )
         return DenonTelnetCommand(
             name=self._name,
-            command=self._command,
+            group=self._group,
             values=self._values,
             val_pfx=self._val_pfx,
             func=self._func,
@@ -201,7 +201,7 @@ def add_command(ref, entry, name, cmd, val_pfx, val_range, zero, func, valid_str
     values = val_range or values
     ref[name] = DenonTelnetCommand(
         name=name,
-        command=cmd,
+        group=cmd,
         values=CommandValues(values),
         val_pfx=val_pfx,
         func=parse["db_to_num"] if func else None,

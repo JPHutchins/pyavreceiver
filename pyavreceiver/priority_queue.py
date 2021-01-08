@@ -87,22 +87,22 @@ class PriorityQueue:
         canceled = None
 
         for qos, queue in enumerate(self._queues):
-            if command.command in queue:
+            if command.group in queue:
                 # Don't add duplicated command at lower QoS
                 if command.qos < qos:
-                    return (const.QUEUE_FAILED, queue[command.command])
+                    return (const.QUEUE_FAILED, queue[command.group])
                 # Save command that will be canceled
-                canceled = queue[command.command]
+                canceled = queue[command.group]
                 # Update value of command at equal QoS (maintains priority)
                 if command.qos == qos:
-                    queue[command.command] = command
+                    queue[command.group] = command
                     return (const.QUEUE_CANCEL, canceled)
                 # Delete matching command found at lower QoS
-                del queue[command.command]
+                del queue[command.group]
                 self._size -= 1
                 break
         # Add command to the queue at the specified QoS level
-        self._queues[command.qos][command.command] = command
+        self._queues[command.qos][command.group] = command
         self._size += 1
 
         if canceled:

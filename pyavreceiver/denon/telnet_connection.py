@@ -50,9 +50,7 @@ class DenonTelnetConnection(TelnetConnection):
                 self._handle_event(resp)
 
                 # Check if this is a response to a previous command
-                if exp_response_items := self._expected_responses.popmatch(
-                    resp.command
-                ):
+                if exp_response_items := self._expected_responses.popmatch(resp.group):
                     _, expected_response = exp_response_items
                     expected_response.set(resp.message)
             # pylint: disable=broad-except, fixme

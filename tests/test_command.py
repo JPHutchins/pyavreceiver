@@ -8,4 +8,4 @@ def test_telnet_command():
     """Test telnet command abstract base class."""
     with pytest.raises(TypeError):
         # pylint: disable=abstract-class-instantiated
-        TelnetCommand(name="FAKE", command="FAKE", values=None)
+        TelnetCommand(name="FAKE", group="FAKE", values=None)

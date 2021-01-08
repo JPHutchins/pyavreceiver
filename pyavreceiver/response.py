@@ -22,8 +22,8 @@ class Message(ABC):
 
     @property
     @abstractmethod
-    def command(self) -> str:
-        """Return the command and parameter category."""
+    def group(self) -> str:
+        """Return the command group (cmd or cmd + prm)."""
 
     @property
     def new_command(self) -> dict:

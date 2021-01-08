@@ -313,11 +313,11 @@ class TelnetConnection(ABC):
         if self._avr.update_state(resp.state_update):
             self._avr.dispatcher.send(const.SIGNAL_STATE_UPDATE, resp.message)
             _LOGGER.debug("Event received: %s", resp.state_update)
-        if expected_response_items := self._expected_responses.popmatch(resp.command):
+        if expected_response_items := self._expected_responses.popmatch(resp.group):
             _, expected_response = expected_response_items
             expected_response.set(resp)
         else:
-            _LOGGER.debug("No expected response matched: %s", resp.command)
+            _LOGGER.debug("No expected response matched: %s", resp.group)
 
     @property
     def commands(self) -> dict:
@@ -441,11 +441,11 @@ class ExpectedResponseQueue:
 
     def __getitem__(self, command: TelnetCommand) -> ExpectedResponse:
         """Get item shortcut through both dicts."""
-        return self._queue[command.command][command]
+        return self._queue[command.group][command]
 
     def __setitem__(self, command: TelnetCommand, expected_response: ExpectedResponse):
         """Set item shortcut through both dicts."""
-        self._queue[command.command][command] = expected_response
+        self._queue[command.group][command] = expected_response
 
     def get(self, command_group) -> Optional[OrderedDict]:
         """Get the (command, response) entries for command_group, if any."""
@@ -462,15 +462,15 @@ class ExpectedResponseQueue:
                 return None
             return (command, expected_response)
 
-    async def cancel_expected_response(self, command) -> None:
+    async def cancel_expected_response(self, command: TelnetCommand) -> None:
         """Cancel and delete the expected response for a specific command."""
         try:
-            expected_response = self._queue[command.command][command]
+            expected_response = self._queue[command.group][command]
             expected_response.set(None)
             await expected_response.cancel_tasks()
-            del self._queue[command.command][command]
+            del self._queue[command.group][command]
             try:
-                self._queue[command.command][command]
+                self._queue[command.group][command]
             except KeyError:
                 return
             _LOGGER.warning("Expected response: %s, was not deleted", expected_response)

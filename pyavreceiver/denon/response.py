@@ -112,7 +112,7 @@ class DenonMessage(Message):
             # No match found: return new entry, assume val after last space
             words = rem.split(" ")
             if len(words) < 2:
-                _LOGGER.info(
+                _LOGGER.debug(
                     "Added new event with empty value: %s, %s, None", *cur, rem
                 )
                 if self:
@@ -120,7 +120,7 @@ class DenonMessage(Message):
                 return (*cur, words[0], None)
             prm = " ".join(words[:-1]).strip()
             val = words[-1].strip()
-            _LOGGER.info("Added new event: %s, %s, %s", *cur, prm, val)
+            _LOGGER.debug("Added new event: %s, %s, %s", *cur, prm, val)
             if self:
                 self._new_command = {"cmd": cur[0], "prm": prm, "val": val}
             return (*cur, prm, val)
@@ -142,7 +142,7 @@ class DenonMessage(Message):
             return (rem, None, None)
         cmd = " ".join(words[:-1]).strip()
         val = words[-1].strip()
-        _LOGGER.info("Parsed new cmd event: %s, None, %s", cmd, val)
+        _LOGGER.debug("Parsed new cmd event: %s, None, %s", cmd, val)
         if self:
             self._new_command = {"cmd": cmd, "prm": None, "val": val}
         return (cmd, None, val)
@@ -185,7 +185,7 @@ class DenonMessage(Message):
         return self._state_update
 
     @property
-    def command(self) -> str:
+    def group(self) -> str:
         return self._cmd + (self._prm or "")
 
     @property

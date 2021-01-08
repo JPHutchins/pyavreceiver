@@ -66,7 +66,7 @@ class TelnetCommand(Command, ABC):
 
     __slots__ = (
         "_name",
-        "_command",
+        "_group",
         "_values",
         "_val_pfx",
         "_func",
@@ -83,7 +83,7 @@ class TelnetCommand(Command, ABC):
         self,
         *,
         name: str = None,
-        command: str = None,
+        group: str = None,
         values: CommandValues = None,
         val_pfx: str = "",
         func: Callable = identity,
@@ -95,7 +95,7 @@ class TelnetCommand(Command, ABC):
         sequence: int = -1
     ):
         self._name = name
-        self._command = command
+        self._group = group
         self._values = values
         self._val_pfx = val_pfx
         self._func = func
@@ -141,13 +141,13 @@ class TelnetCommand(Command, ABC):
         self._qos += 1
 
     @property
-    def command(self) -> str:
-        """The command portion of the message."""
-        return self._command
+    def group(self) -> str:
+        """The group portion of the message."""
+        return self._group
 
     @property
     def message(self) -> str:
-        """The complete message; command + argument."""
+        """The complete message; group + argument."""
         if not self._message:
             raise Exception
         return self._message
