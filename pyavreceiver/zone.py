@@ -1,6 +1,5 @@
 """Define the interface of an A/V Receiver Zone."""
 import asyncio
-from abc import ABC
 from functools import partial
 from typing import Callable, Coroutine, Dict, Sequence, Union
 
@@ -8,7 +7,7 @@ from pyavreceiver import const
 from pyavreceiver.command import Command
 
 
-class Zone(ABC):
+class Zone:
     """Define an Audio/Video Receiver zone."""
 
     def __init__(self, avr, zone: str = "main"):
