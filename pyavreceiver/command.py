@@ -1,6 +1,6 @@
 """Define commands."""
 from abc import ABC, abstractmethod
-from typing import Callable, Sequence, Tuple, Union
+from typing import Callable, List, Sequence, Tuple, Union
 
 from pyavreceiver.error import AVReceiverInvalidArgumentError
 from pyavreceiver.functions import identity
@@ -28,6 +28,10 @@ class CommandValues:
         """Patch to dict.get()."""
         return self._values.get(name)
 
+    def keys(self) -> list:
+        """Patch dict.keys()."""
+        return self._values.keys()
+
     def update(self, _dict):
         """Patch to dict.update()."""
         self._values.update(_dict)
@@ -35,6 +39,10 @@ class CommandValues:
     def items(self) -> Sequence[Tuple[str, Union[int, str, float]]]:
         """Patch to dict.items()."""
         return self._values.items()
+
+    def values(self) -> List[str]:
+        """Patch to dict.values()."""
+        return self._values.values()
 
     def __getattr__(self, name: str) -> Union[int, str, float]:
         if name in self._values:
@@ -87,7 +95,7 @@ class TelnetCommand(Command, ABC):
         valid_strings: list = None,
         message: str = None,
         qos: int = 0,
-        sequence: int = -1
+        sequence: int = -1,
     ):
         self._name = name
         self._group = group
@@ -110,6 +118,16 @@ class TelnetCommand(Command, ABC):
             return self._sequence == other._sequence
         except AttributeError:
             return False
+
+    def __repr__(self):
+        args = list(self._values.keys())
+        for i, arg in enumerate(args):
+            if arg in ("min", "max"):
+                args[i] = f"{arg}: {self._values[arg]}"
+        return (
+            f"{self.__class__.__name__}, name: {self._name}, group: {self._group},"
+            f"val: {self._val}, args: {args}"
+        )
 
     @abstractmethod
     def set_val(self, val: Union[int, float, str], qos: int = None, sequence: int = -1):
