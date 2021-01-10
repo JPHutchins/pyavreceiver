@@ -40,6 +40,7 @@ Some primary principals:
 The telnet protocol is useful for maintaining realtime state of an AVR with low latency.  pyavreceiver uses [telnetlib3](https://github.com/jquast/telnetlib3).  Telnet commands are throttled according to manufacturer specification by means of a `PriorityQueue`.  The `PriorityQueue` and related `ExpectedResponseQueue` allow for varying levels of QoS.  For example, a QoS 0 command has no QoS and can in fact be issued synchronously (eg. for rapid incremental volume changes).  
 
 All commands above 0 QoS will add an `ExpectedResponse` to the `ExpectedResponseQueue`.  This `ExpectedResponse` will be cleared from the queue if 1) the device replies to the command or 2) the command expires (retires expended or default expiration of 1.5s exceeded).  Higher levels of QoS will be executed before lower QoS commands in the queue *even if the lower QoS command was issued first.*  Only two commands, power and mute, are set to the highest QoS level of 3 with most commands at 2.
+
 ![QoS Diagram](docs/qos-diagram.svg)
 
 ## Contributions
