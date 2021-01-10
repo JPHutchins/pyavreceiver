@@ -1,14 +1,17 @@
 """Define the interface of an A/V Receiver Zone."""
 import asyncio
-from abc import ABC, abstractmethod
+import logging
 from functools import partial
-from typing import Callable, Coroutine, Dict, Sequence, Union
+from typing import Callable, Coroutine, Dict, List, Optional, Sequence, Union
 
 from pyavreceiver import const
 from pyavreceiver.command import Command
+from pyavreceiver.functions import none
+
+_LOGGER = logging.getLogger(__name__)
 
 
-class Zone(ABC):
+class Zone:
     """Define an Audio/Video Receiver zone."""
 
     def __init__(self, avr, zone: str = "main"):
@@ -22,13 +25,37 @@ class Zone(ABC):
         """Get the current state of the attribute name."""
         return self.state.get(self._zone_prefix + name)
 
+    def get_args(self, name: str) -> Optional[List[Union[str, bool]]]:
+        """Get the list of valid args for the command, if command exists."""
+        if command := self.commands.get(name):
+            return command.values
+        return None
+
     def set(self, name: str, val=None, qos=0) -> Union[Coroutine, bool]:
         """Request the receiver set the name to val."""
         if qos == 0:
-            command = self.commands[f"{self._zone_prefix}{name}"].set_val(val)
+            try:
+                command = self.commands[self._zone_prefix + name].set_val(val)
+            except KeyError:
+                _LOGGER.debug(
+                    "KeyError: command %s%s does not exist in %s",
+                    self._zone_prefix,
+                    name,
+                    self.commands,
+                )
+                return None
             self.telnet_connection.send_command(command)
             return True
-        command = self.commands[f"{self._zone_prefix}{name}"].set_val(val, qos=qos)
+        try:
+            command = self.commands[self._zone_prefix + name].set_val(val, qos=qos)
+        except KeyError:
+            _LOGGER.debug(
+                "KeyError: command %s%s does not exist in %s",
+                self._zone_prefix,
+                name,
+                self.commands,
+            )
+            return none()
         return self.telnet_connection.async_send_command(command)
 
     def update(self, name: str) -> Coroutine:
@@ -42,6 +69,11 @@ class Zone(ABC):
         for name in self.commands:
             tasks.append(self.update(name))
         await asyncio.gather(*tasks)
+
+    @property
+    def available(self) -> bool:
+        """Return True if the device is available."""
+        return self.avr.connection_state == const.STATE_CONNECTED
 
     @property
     def avr(self):
@@ -64,23 +96,13 @@ class Zone(ABC):
         return self.avr.telnet_connection
 
     @property
-    def available(self):
-        """Return True if the device is available."""
-        return self.avr.connection_state == const.STATE_CONNECTED
-
-    @property
-    @abstractmethod
-    def source_list(self) -> Sequence[str]:
-        """Return a list of available input sources."""
-
-    @property
     def bass(self) -> int:
         """The state of bass."""
         return self.get(const.ATTR_BASS)
 
-    def set_bass(self, val: float) -> Coroutine:
+    def set_bass(self, val: float) -> bool:
         """Request the receiver set the bass to val."""
-        return self.set(const.ATTR_BASS, val, 1)
+        return self.set(const.ATTR_BASS, val)
 
     @property
     def max_volume(self) -> int:
@@ -116,13 +138,18 @@ class Zone(ABC):
         return self.set(const.ATTR_SOURCE, val, 2)
 
     @property
+    def source_list(self):
+        """Return a list of available input sources."""
+        return [k for k, v in self.avr.sources.items() if v is not None]
+
+    @property
     def treble(self) -> int:
         """The state of treble."""
         return self.get(const.ATTR_TREBLE)
 
-    def set_treble(self, val: float) -> Coroutine:
+    def set_treble(self, val: float) -> bool:
         """Request the receiver set the treble to val."""
-        return self.set(const.ATTR_TREBLE, val, 1)
+        return self.set(const.ATTR_TREBLE, val)
 
     @property
     def volume(self) -> str:
@@ -163,36 +190,54 @@ class MainZone(Zone):
         """The state of DSP dynamic range."""
         return self.get(const.ATTR_DSP_DRC)
 
-    def set_dsp_dynamic_range(self, val) -> bool:
+    def set_dsp_dynamic_range(self, val) -> Coroutine:
         """Request the receiver set the DRC to val."""
-        return self.set(const.ATTR_DSP_DRC, val)
+        return self.set(const.ATTR_DSP_DRC, val, 2)
 
     @property
     def dsp_mode(self) -> str:
         """The state of DSP mode."""
         return self.get(const.ATTR_DSP_MODE)
 
-    def set_dsp_mode(self, val: str) -> bool:
+    def set_dsp_mode(self, val: str) -> Coroutine:
         """Request the receiver set DSP mode to val."""
-        return self.set(const.ATTR_DSP_MODE, val)
+        return self.set(const.ATTR_DSP_MODE, val, 2)
+
+    @property
+    def front_height(self) -> str:
+        """The state of front height."""
+        return self.get(const.ATTR_FRONT_HEIGHT)
+
+    def set_front_height(self, val: str) -> Coroutine:
+        """Request the receiver set front height to val."""
+        return self.set(const.ATTR_FRONT_HEIGHT, val, 2)
 
     @property
     def lfe_level(self) -> str:
         """The state of LFE level."""
         return self.get(const.ATTR_LFE_LEVEL)
 
-    def set_lfe_level(self, val: float) -> bool:
+    def set_lfe_level(self, val: float) -> Coroutine:
         """Request the receiver set LFE level to val."""
-        return self.set(const.ATTR_LFE_LEVEL, val)
+        return self.set(const.ATTR_LFE_LEVEL, val, 2)
+
+    @property
+    def meta_drc_enabled(self) -> bool:
+        """The state of metadata dynamic range control."""
+        return self.get(const.ATTR_META_DRC_ENABLED)
+
+    def set_meta_drc_enabled(self, val: bool) -> Coroutine:
+        """Request the receiver set dynamic range control to val."""
+        return self.set(const.ATTR_META_DRC_ENABLED, val, 2)
 
     @property
     def meta_dynamic_range(self) -> str:
         """The state of metadata dynamic range control."""
         return self.get(const.ATTR_META_DRC)
 
-    def set_meta_dynamic_range(self, val: str) -> bool:
+    def set_meta_dynamic_range(self, val: str) -> Coroutine:
         """Request the receiver set meta DRC to val."""
-        return self.set(const.ATTR_META_DRC, val)
+        return self.set(const.ATTR_META_DRC, val, 1)
 
     @property
     def power(self) -> str:
@@ -208,9 +253,9 @@ class MainZone(Zone):
         """The state of soundmode."""
         return self.get(const.ATTR_SOUND_MODE)
 
-    def set_soundmode(self, val: str) -> bool:
+    def set_soundmode(self, val: str) -> Coroutine:
         """Request the receiver set the sound mode to val."""
-        return self.set(const.ATTR_SOUND_MODE, val.lower())
+        return self.set(const.ATTR_SOUND_MODE, val.lower(), 2)
 
     @property
     def sound_mode_list(self) -> Sequence[str]:
@@ -226,18 +271,27 @@ class MainZone(Zone):
         """The state of subwoofer one."""
         return self.get(const.ATTR_SUBWOOFER_ONE)
 
-    def set_subwoofer_one(self, val: bool) -> bool:
+    def set_subwoofer_one(self, val: bool) -> Coroutine:
         """Request the receiver set subwoofer one to val."""
-        return self.set(const.ATTR_SUBWOOFER_ONE, val)
+        return self.set(const.ATTR_SUBWOOFER_ONE, val, 2)
+
+    @property
+    def surround_back(self) -> bool:
+        """The state of surround back."""
+        return self.get(const.ATTR_SURROUND_BACK)
+
+    def set_surround_back(self, val: bool) -> Coroutine:
+        """Request the receiver set surround back to val."""
+        return self.set(const.ATTR_SURROUND_BACK, val, 2)
 
     @property
     def tone_control(self) -> str:
         """The state of tone control."""
         return self.get(const.ATTR_TONE_CONTROL)
 
-    def set_tone_control(self, val: bool) -> bool:
+    def set_tone_control(self, val: bool) -> Coroutine:
         """Request the receiver set the treble to val."""
-        return self.set(const.ATTR_TONE_CONTROL, val)
+        return self.set(const.ATTR_TONE_CONTROL, val, 2)
 
 
 def filter_zones(item, correct_prefixes, wrong_prefixes, zone) -> bool:

@@ -10,9 +10,8 @@ API_2016_DEVICE_INFO_URL = "/goform/Deviceinfo.xml"
 
 CLI_PORT = 23
 
-MESSAGE_INTERVAL_LIMIT = 50  # milliseconds
-MESSAGE_RESPONSE_TIMEOUT = 250  # milliseconds
-
+DEFAULT_MESSAGE_INTERVAL_LIMIT = 0.05  # 50ms
+DEFAULT_MESSAGE_RESPONSE_TIMEOUT = 0.25  # 250ms
 TELNET_SEPARATOR = "\r"
 
 TELNET_PORT = 23
@@ -26,6 +25,7 @@ DEVICE_INFO_ENDPOINTS = [
 ]
 
 DEVICE_INFO_SEARCH = {"model": ["ModelName", "ManualModelName"]}
+DEVICE_MIN_VOLUME = -80
 
 # Valid source on auxiliary zones that follows main zone
 SOURCE_FOLLOW = "SOURCE"
@@ -65,7 +65,11 @@ MAP_HTTP_SOURCE_NAME_TO_TELNET = {
 
 TELNET_QUERY = "?"
 
+ATTR_CINEMA_EQ = "cinema_eq"
+ATTR_DSX = "audyssey_dsx"
 ATTR_DYNAMIC_EQ = "audyssey_dynamic_eq"
+ATTR_MULTI_EQ = "audyssey_multi_eq"
+ATTR_REFLEV_OFFSET = "audyssey_reference_level_offset"
 
 XML_MODEL_NAME = "ModelName"
 XML_MAC_ADDRESS = "MacAddress"

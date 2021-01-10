@@ -1,14 +1,10 @@
 """Define commands."""
 from abc import ABC, abstractmethod
-from typing import Callable, Sequence, Tuple, Union
+from typing import Callable, List, Sequence, Tuple, Union
 
+from pyavreceiver import const
 from pyavreceiver.error import AVReceiverInvalidArgumentError
-
-
-def identity(arg, **kwargs):
-    """The identity function returns the input."""
-    # pylint: disable=unused-argument
-    return arg
+from pyavreceiver.functions import identity
 
 
 class CommandValues:
@@ -33,6 +29,10 @@ class CommandValues:
         """Patch to dict.get()."""
         return self._values.get(name)
 
+    def keys(self) -> list:
+        """Patch dict.keys()."""
+        return self._values.keys()
+
     def update(self, _dict):
         """Patch to dict.update()."""
         self._values.update(_dict)
@@ -40,6 +40,10 @@ class CommandValues:
     def items(self) -> Sequence[Tuple[str, Union[int, str, float]]]:
         """Patch to dict.items()."""
         return self._values.items()
+
+    def values(self) -> List[str]:
+        """Patch to dict.values()."""
+        return self._values.values()
 
     def __getattr__(self, name: str) -> Union[int, str, float]:
         if name in self._values:
@@ -66,7 +70,7 @@ class TelnetCommand(Command, ABC):
 
     __slots__ = (
         "_name",
-        "_command",
+        "_group",
         "_values",
         "_val_pfx",
         "_func",
@@ -83,7 +87,7 @@ class TelnetCommand(Command, ABC):
         self,
         *,
         name: str = None,
-        command: str = None,
+        group: str = None,
         values: CommandValues = None,
         val_pfx: str = "",
         func: Callable = identity,
@@ -92,10 +96,10 @@ class TelnetCommand(Command, ABC):
         valid_strings: list = None,
         message: str = None,
         qos: int = 0,
-        sequence: int = -1
+        sequence: int = -1,
     ):
         self._name = name
-        self._command = command
+        self._group = group
         self._values = values
         self._val_pfx = val_pfx
         self._func = func
@@ -105,7 +109,7 @@ class TelnetCommand(Command, ABC):
         self._message = message
         self._qos = qos
         self._sequence = sequence
-        self._retries = [0, 1, 2, 2, 2][qos]  # qos defines number of retries
+        self._retries = const.DEFAULT_RETRY_SCHEMA[qos]  # qos defines number of retries
 
     def __hash__(self):
         return self._sequence
@@ -115,6 +119,16 @@ class TelnetCommand(Command, ABC):
             return self._sequence == other._sequence
         except AttributeError:
             return False
+
+    def __repr__(self):
+        args = list(self._values.keys())
+        for i, arg in enumerate(args):
+            if arg in ("min", "max"):
+                args[i] = f"{arg}: {self._values[arg]}"
+        return (
+            f"{self.__class__.__name__}, name: {self._name}, group: {self._group},"
+            f"val: {self._val}, args: {args}"
+        )
 
     @abstractmethod
     def set_val(self, val: Union[int, float, str], qos: int = None, sequence: int = -1):
@@ -141,13 +155,13 @@ class TelnetCommand(Command, ABC):
         self._qos += 1
 
     @property
-    def command(self) -> str:
-        """The command portion of the message."""
-        return self._command
+    def group(self) -> str:
+        """The group portion of the message."""
+        return self._group
 
     @property
     def message(self) -> str:
-        """The complete message; command + argument."""
+        """The complete message; group + argument."""
         if not self._message:
             raise Exception
         return self._message

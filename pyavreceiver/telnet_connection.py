@@ -10,10 +10,10 @@ import telnetlib3
 
 from pyavreceiver import const
 from pyavreceiver.command import TelnetCommand
+from pyavreceiver.functions import none
 from pyavreceiver.priority_queue import PriorityQueue
 from pyavreceiver.response import Message
 
-logging.basicConfig(level=logging.DEBUG)
 _LOGGER = logging.getLogger(__name__)
 
 # Monkey patch misbehaving repr until fixed
@@ -56,7 +56,7 @@ class TelnetConnection(ABC):
         self._last_command_time = datetime(2020, 1, 1)  # type: datetime
         self._heart_beat_interval = heart_beat  # type: Optional[float]
         self._heart_beat_task = None  # type: asyncio.Task
-        self._message_interval_limit = const.MESSAGE_INTERVAL_LIMIT
+        self._message_interval_limit = const.DEFAULT_MESSAGE_INTERVAL_LIMIT
 
     @abstractmethod
     def _load_command_dict(self, path=None):
@@ -203,7 +203,7 @@ class TelnetConnection(ABC):
                     await self._handle_connection_error()
             await asyncio.sleep(self._heart_beat_interval / 2)
 
-    def send_command(self, command, heartbeat=False):
+    def send_command(self, command: TelnetCommand, heartbeat=False):
         """Execute a command."""
         if not heartbeat and self._state != const.STATE_CONNECTED:
             _LOGGER.debug(
@@ -213,7 +213,7 @@ class TelnetConnection(ABC):
             )
             return
 
-        _LOGGER.debug("queueing command: %s", command.message)
+        _LOGGER.debug("Command queued: %s", command.message)
         self._command_queue.push(command)
 
     def async_send_command(self, command: TelnetCommand) -> Coroutine:
@@ -222,41 +222,62 @@ class TelnetConnection(ABC):
         # Give command a unique sequence id and increment
         command.set_sequence(self._sequence)
         self._sequence += 1
+        # Push command onto queue
         status, cancel = self._command_queue.push(command)
+        # Determine the type of awaitable response to return
         if status == const.QUEUE_FAILED:
-            _LOGGER.debug("Command not queued.")
+            _LOGGER.debug("Command not queued: %s", command.message)
             return cancel.wait()
         if status == const.QUEUE_CANCEL:
             try:
+                _LOGGER.debug("Command overwritten: %s", command.message)
                 self._expected_responses[cancel].overwrite_command(command)
                 return self._expected_responses[cancel].wait()
             except KeyError:
                 # Can happen when a query returns multiple responses to one query
-                # self._expected_responses[command] = ExpectedResponse(command, self)
-                # return self._expected_responses[command].wait()
-                async def blank_awaitable():
-                    """Blank awaitable."""
-                    return None
-
-                return blank_awaitable()
+                _LOGGER.debug("Command already resolved: %s", command.message)
+                return none()
         if status == const.QUEUE_NO_CANCEL:
+            _LOGGER.debug("Command queued: %s", command.message)
             self._expected_responses[command] = ExpectedResponse(command, self)
             return self._expected_responses[command].wait()
 
+    def resend_command(self, expected_response: "ExpectedResponse") -> None:
+        """Resend a command that was not responded to."""
+        status, cancel = self._command_queue.push(expected_response.command)
+        if status == const.QUEUE_FAILED:
+            # A resend at higher qos was already sent
+            # This shouldn't happen
+            self._expected_responses[
+                expected_response.command
+            ] = self._expected_responses[cancel]
+        if status == const.QUEUE_CANCEL:
+            # The resend will overwrite a queued command, set that commands response to
+            # trigger on resolution of this command
+            self._expected_responses[cancel] = self
+            _LOGGER.debug(
+                "QoS requeueing command: %s", expected_response.command.message
+            )
+        if status == const.QUEUE_NO_CANCEL:
+            # The resend is treated as if it is the original command
+            _LOGGER.debug(
+                "QoS requeueing command: %s", expected_response.command.message
+            )
+
     async def _process_command_queue(self):
         while True:
-            wait_time = 0.02
+            wait_time = const.DEFAULT_QUEUE_INTERVAL
             if self._command_queue.is_empty:
                 await asyncio.sleep(wait_time)
                 continue
             try:
                 time_since_last_command = datetime.utcnow() - self._last_command_time
-                threshold = timedelta(milliseconds=self._message_interval_limit)
-                wait_time = self._message_interval_limit / 1000  # ms -> s
+                threshold = timedelta(seconds=self._message_interval_limit)
+                wait_time = self._message_interval_limit
                 if (time_since_last_command > threshold) and (
                     command := self._command_queue.popcommand()
                 ):
-                    _LOGGER.debug("Popped command: %s", command.message)
+                    _LOGGER.debug("Sending command: %s", command.message)
                     # Send command message
                     self._writer.write(command.message)
                     await self._writer.drain()
@@ -269,19 +290,21 @@ class TelnetConnection(ABC):
                     except KeyError:
                         # QoS 0 command
                         pass
-                    wait_time = self._message_interval_limit / 1000 + 0.002
+                    wait_time = (
+                        self._message_interval_limit + const.DEFAULT_QUEUE_INTERVAL
+                    )
                 else:
                     wait_time = (
                         threshold.total_seconds()
                         - time_since_last_command.total_seconds()
-                        + 0.002
+                        + const.DEFAULT_QUEUE_INTERVAL
                     )
                 await asyncio.sleep(wait_time)
             # pylint: disable=broad-except, fixme
             except Exception as err:
                 # TODO: error handling
                 _LOGGER.critical(Exception(err))
-                await asyncio.sleep(0.05)
+                await asyncio.sleep(self._message_interval_limit)
 
     def _handle_event(self, resp: Message):
         """Handle a response event."""
@@ -290,11 +313,11 @@ class TelnetConnection(ABC):
         if self._avr.update_state(resp.state_update):
             self._avr.dispatcher.send(const.SIGNAL_STATE_UPDATE, resp.message)
             _LOGGER.debug("Event received: %s", resp.state_update)
-        if expected_response_items := self._expected_responses.popmatch(resp.command):
+        if expected_response_items := self._expected_responses.popmatch(resp.group):
             _, expected_response = expected_response_items
             expected_response.set(resp)
         else:
-            _LOGGER.debug("No expected response matched: %s", resp.command)
+            _LOGGER.debug("No expected response matched: %s", resp.group)
 
     @property
     def commands(self) -> dict:
@@ -312,27 +335,27 @@ class ExpectedResponse:
 
     __slots__ = (
         "_attempts",
-        "_event",
         "_command",
-        "_response",
-        "_time_sent",
-        "_qos_task",
-        "_expire_task",
         "_command_timeout",
         "_connection",
+        "_event",
+        "_expire_task",
+        "_qos_task",
+        "_response",
+        "_time_sent",
     )
 
     def __init__(self, command: TelnetCommand, connection: TelnetConnection):
         """Init a new instance of the CommandEvent."""
         self._attempts = 0
-        self._event = asyncio.Event()
         self._command = command
-        self._connection = connection
         self._command_timeout = const.DEFAULT_TELNET_TIMEOUT
+        self._connection = connection
+        self._event = asyncio.Event()
+        self._expire_task = None  # type: asyncio.Task
+        self._qos_task = None  # type: asyncio.Task
         self._response = None
         self._time_sent = None
-        self._qos_task = None  # type: asyncio.Task
-        self._expire_task = None  # type: asyncio.Task
 
     async def cancel_tasks(self) -> None:
         """Cancel the QoS and/or expire tasks."""
@@ -392,22 +415,7 @@ class ExpectedResponse:
     async def _resend_command(self) -> None:
         await asyncio.sleep(self._command_timeout)
         if self._attempts <= self._command.retries:
-            # pylint: disable=protected-access
-            status, cancel = self._connection._command_queue.push(self._command)
-            if status == const.QUEUE_FAILED:
-                # A resend at higher qos was already sent
-                # This shouldn't happen
-                self._connection._expected_responses[
-                    self._command
-                ] = self._connection._expected_responses[cancel]
-            if status == const.QUEUE_CANCEL:
-                # The resend will overwrite a queued command, set that commands response to
-                # trigger on resolution of this command
-                self._connection._expected_responses[cancel] = self
-                _LOGGER.debug("QoS requeueing command: %s", self._command.message)
-            if status == const.QUEUE_NO_CANCEL:
-                # The resend is treated as if it is the original command
-                _LOGGER.debug("QoS requeueing command: %s", self._command.message)
+            self._connection.resend_command(self)
         else:
             _LOGGER.debug(
                 "Command %s failed after %s attempts",
@@ -417,9 +425,9 @@ class ExpectedResponse:
             self.set(None)
 
     @property
-    def command(self) -> int:
+    def command(self) -> TelnetCommand:
         """Get the command that represents this event."""
-        return self._command.command
+        return self._command
 
 
 class ExpectedResponseQueue:
@@ -433,36 +441,34 @@ class ExpectedResponseQueue:
 
     def __getitem__(self, command: TelnetCommand) -> ExpectedResponse:
         """Get item shortcut through both dicts."""
-        return self._queue[command.command][command]
+        return self._queue[command.group][command]
 
     def __setitem__(self, command: TelnetCommand, expected_response: ExpectedResponse):
         """Set item shortcut through both dicts."""
-        self._queue[command.command][command] = expected_response
+        self._queue[command.group][command] = expected_response
 
-    def get(self, command_group) -> Optional[OrderedDict]:
-        """Get the (command, response) entries for command_group, if any."""
-        return self._queue.get(command_group)
+    def get(self, group) -> Optional[OrderedDict]:
+        """Get the (command, response) entries for group, if any."""
+        return self._queue.get(group)
 
-    def popmatch(
-        self, command_group
-    ) -> Optional[Tuple[TelnetCommand, ExpectedResponse]]:
+    def popmatch(self, group) -> Optional[Tuple[TelnetCommand, ExpectedResponse]]:
         """Pop the oldest matching expected response entry, if any."""
-        if match := self._queue.get(command_group):
+        if match := self._queue.get(group):
             try:
                 command, expected_response = match.popitem(last=False)
             except KeyError:
                 return None
             return (command, expected_response)
 
-    async def cancel_expected_response(self, command) -> None:
+    async def cancel_expected_response(self, command: TelnetCommand) -> None:
         """Cancel and delete the expected response for a specific command."""
         try:
-            expected_response = self._queue[command.command][command]
+            expected_response = self._queue[command.group][command]
             expected_response.set(None)
             await expected_response.cancel_tasks()
-            del self._queue[command.command][command]
+            del self._queue[command.group][command]
             try:
-                self._queue[command.command][command]
+                self._queue[command.group][command]
             except KeyError:
                 return
             _LOGGER.warning("Expected response: %s, was not deleted", expected_response)

@@ -1,16 +1,19 @@
 """Define constants."""
 
 __title__ = "pyavreceiver"
-__version__ = "0.0.8"
+__version__ = "0.0.10"
 
 
 CLI_PORT = 23
-DEFAULT_COMMAND_EXPIRATION = 10
+DEFAULT_COMMAND_EXPIRATION = 1.5  # 1500ms
+DEFAULT_MESSAGE_INTERVAL_LIMIT = 0.05  # 50ms
+DEFAULT_QUEUE_INTERVAL = 0.002  # 2ms
 DEFAULT_TELNET_TIMEOUT = 0.25  # 250ms
 DEFAULT_TIMEOUT = 10.0
 DEFAULT_RECONNECT_DELAY = 10.0
 DEFAULT_HEART_BEAT = 10.0
 DEFAULT_STEP = 5
+DEFAULT_RETRY_SCHEMA = [0, 1, 2, 2, 2]  # number of retry attempts indexed by QoS level
 
 STATE_CONNECTED = "connected"
 STATE_DISCONNECTED = "disconnected"
@@ -52,13 +55,16 @@ ATTR_MUTE = "mute"
 ATTR_SOURCE = "source"
 ATTR_SOUND_MODE = "sound_mode"
 ATTR_SUBWOOFER_ONE = "subwoofer_1"
+ATTR_SURROUND_BACK = "surround_back"
 ATTR_TONE_CONTROL = "tone_control"
 ATTR_TREBLE = "treble"
 ATTR_BASS = "bass"
 ATTR_DIALOG_LEVEL = "dialog_level"
+ATTR_META_DRC_ENABLED = "dynamic_range_control"
 ATTR_DSP_DRC = "dsp_dynamic_range_control"
 ATTR_DSP_MODE = "dsp_mode"
-ATTR_META_DRC = "meta_dynamic_range_control"
+ATTR_FRONT_HEIGHT = "front_height"
+ATTR_META_DRC = "metadata_dynamic_range_control"
 ATTR_ZONE1_POWER = "zone1_power"
 
 ATTR_ZONE2_POWER = "zone2_power"
@@ -104,8 +110,6 @@ INFO_MAC = "mac_address"
 INFO_MANUFACTURER = "manufacturer"
 INFO_ZONES = "zones"
 INFO_SERIAL = "serial_number"
-
-MESSAGE_INTERVAL_LIMIT = 50  # milliseconds
 
 UPNP_ENDPOINTS = {
     "denon-avr": ":8080/description.xml",

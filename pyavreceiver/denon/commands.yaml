@@ -225,10 +225,11 @@ PS:
     "OFF": false
     ESMTRX:
   CINEMA EQ.:
-    "ON": "On"
-    "OFF": "Off"
+    ^name: cinema_eq
+    "ON": true
+    "OFF": false
   "MODE:":
-    ^name: dsp_category
+    ^name: dsp_mode
     CINEMA:
     MUSIC:
     GAME:
@@ -236,8 +237,8 @@ PS:
     HEIGHT:
   "FH:":
     ^name: front_height
-    "ON": "On"
-    "OFF": "Off"
+    "ON": true
+    "OFF": false
   PHG:
     LOW:
     MID:
@@ -246,18 +247,18 @@ PS:
     FH:
     FW:
     SB:
-    "OFF":
+    "OFF": false
   "MULTEQ:":
     ^name: audyssey_multi_eq
     AUDYSSEY:
     BYP.LR:
     FLAT:
     MANUAL:
-    "OFF":
+    "OFF": false
   DYNEQ:
     ^name: audyssey_dynamic_eq
-    "ON": "On"
-    "OFF": "Off"
+    "ON": true
+    "OFF": false
   REFLEV:
     ^name: audyssey_reference_level_offset
     0: 0
@@ -286,16 +287,18 @@ PS:
     LOW: low
     MID: medium
     HI: high
-    "OFF": "off"
+    "OFF": false
+    "ON": true
   DYNVOL:
     ^name: dsp_dynamic_range_control
     HEV: high
     MED: medium
     LIT: low
-    "OFF": "off"
+    "OFF": false
   DSX:
-    "ON": "On"
-    "OFF": "Off"
+    ^name: "audyssey_dsx"
+    "ON": true
+    "OFF": false
   STW:
     ^range:
       - 40
@@ -323,7 +326,7 @@ PS:
     LOW: low
     MID: medium
     HIGH: high
-    "OFF": "off"
+    "OFF": false
   LFE:
     ^name: lfe_level
     ^range:
@@ -336,11 +339,11 @@ PS:
       - 1
       - 15
   AFD:
-    "ON": "On"
-    "OFF": "Off"
+    "ON": true
+    "OFF": false
   PAN:
-    "ON": "On"
-    "OFF": "Off"
+    "ON": true
+    "OFF": false
   DIM:
     ^range:
       - 0
@@ -371,7 +374,7 @@ PS:
     MODE1:
     MODE2:
     MODE3:
-    "OFF":
+    "OFF": false
   FRONT:
     SPA:
     SPB:

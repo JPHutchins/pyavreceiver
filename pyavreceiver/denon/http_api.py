@@ -5,10 +5,10 @@ import aiohttp
 
 from pyavreceiver import const
 from pyavreceiver.denon import const as denon_const
-from pyavreceiver.http_connection import HTTPConnection
+from pyavreceiver.http_api import HTTPApi
 
 
-class DenonHTTPApi(HTTPConnection):
+class DenonHTTPApi(HTTPApi):
     """Define the Denon HTTP API."""
 
     async def get_device_info(self) -> dict:

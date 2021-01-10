@@ -28,7 +28,7 @@ class DenonTelnetConnection(TelnetConnection):
     ):
         """Init the connection."""
         super().__init__(avr, host, port=port, timeout=timeout, heart_beat=heart_beat)
-        self._message_interval_limit = denon_const.MESSAGE_INTERVAL_LIMIT
+        self._message_interval_limit = denon_const.DEFAULT_MESSAGE_INTERVAL_LIMIT
 
     def _load_command_dict(self, path=None):
         with resources.open_text("pyavreceiver.denon", "commands.yaml") as file:
@@ -50,8 +50,8 @@ class DenonTelnetConnection(TelnetConnection):
                 self._handle_event(resp)
 
                 # Check if this is a response to a previous command
-                if exp_response_item := self._expected_responses.popmatch(resp.command):
-                    _, expected_response = exp_response_item
+                if exp_response_items := self._expected_responses.popmatch(resp.group):
+                    _, expected_response = exp_response_items
                     expected_response.set(resp.message)
             # pylint: disable=broad-except, fixme
             except Exception as err:

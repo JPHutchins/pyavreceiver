@@ -23,7 +23,7 @@ class GenericTelnetConnection(TelnetConnection):
     ):
         """Init the connection."""
         super().__init__(avr, host, port=port, timeout=timeout, heart_beat=heart_beat)
-        self._message_interval_limit = const.MESSAGE_INTERVAL_LIMIT
+        self._message_interval_limit = const.DEFAULT_MESSAGE_INTERVAL_LIMIT
 
     def _load_command_dict(self, path=None):
         with resources.open_text("pyavreceiver.denon", "commands.yaml") as file:
